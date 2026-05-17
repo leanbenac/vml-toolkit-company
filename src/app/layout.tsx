@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Navbar } from "@/components/Navbar/Navbar";
-import { PasswordGate } from "@/components/PasswordGate/PasswordGate";
+// import { PasswordGate } from "@/components/PasswordGate/PasswordGate";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -23,12 +23,12 @@ export default function RootLayout({
     <html lang="es">
       <body>
         <div className="grid-overlay" />
-        <PasswordGate>
-          <Navbar />
-          <main style={{ padding: '0 2rem' }}>
-            {children}
-          </main>
-        </PasswordGate>
+        {/* <PasswordGate> */}
+        <Navbar />
+        <main style={{ padding: '0 2rem' }}>
+          {children}
+        </main>
+        {/* </PasswordGate> */}
       </body>
     </html>
   );

@@ -110,6 +110,9 @@ export default function AdminPage() {
           team: formData.team,
           file_url: finalFileUrl,
           image_url: finalImageUrl, 
+          // DESCOMENTAR PARA ACTIVAR LA MODERACIÓN (Si se omite, en Supabase el default es false)
+          // is_approved: false, 
+          is_approved: true, // Auto-aprobar para adopción rápida (Quitar esto cuando se active el moderador)
         }
       ]);
 
@@ -141,9 +144,15 @@ export default function AdminPage() {
           <div className={styles.successIcon}>✨</div>
           <h2 className="text-gradient">¡Aporte Recibido!</h2>
           <p>
+            Gracias <strong>{formData.author}</strong>. Tu herramienta se subió correctamente y ya 
+            está disponible en la galería para todo el equipo.
+          </p>
+          {/* MODO MODERADOR (Descomentar en el futuro):
+          <p>
             Gracias <strong>{formData.author}</strong>. Tu herramienta se envió correctamente y está 
             pendiente de revisión por un moderador.
           </p>
+          */}
           <button 
             className={styles.submitBtn} 
             onClick={() => router.push('/')}
