@@ -28,6 +28,7 @@ export default function AdminPage() {
   const [toolFile, setToolFile] = useState<File | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+  const [errorMsg, setErrorMsg] = useState('');
 
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -59,6 +60,7 @@ export default function AdminPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsUploading(true);
+    setErrorMsg('');
     
     try {
       let finalImageUrl = null;
@@ -117,8 +119,8 @@ export default function AdminPage() {
       setIsSuccess(true);
       // No redirigimos automáticamente, dejamos que el usuario vea el éxito y presione el botón
     } catch (err) {
-      console.error("Error inserting tool:", err);
-      alert("Hubo un error al guardar la herramienta. Revisa la consola o asegúrate de haber creado el bucket 'tools' en Supabase.");
+      console.error("Error al subir herramienta:", err);
+      setErrorMsg("Ocurrió un error de conexión al subir los archivos. Por favor, intenta de nuevo más tarde.");
     } finally {
       setIsUploading(false);
     }
@@ -152,6 +154,13 @@ export default function AdminPage() {
         </div>
       ) : (
         <form className={`${styles.form} ${styles.formNoHover} card-glass`} onSubmit={handleSubmit}>
+          
+          {errorMsg && (
+            <div style={{ backgroundColor: 'rgba(255,50,50,0.1)', border: '1px solid rgba(255,50,50,0.3)', color: '#ff6b6b', padding: '1rem', borderRadius: '12px', marginBottom: '1.5rem', textAlign: 'center' }}>
+              {errorMsg}
+            </div>
+          )}
+
         <div className={styles.field}>
           <label htmlFor="author">Creador de la herramienta</label>
           <input 
