@@ -6,6 +6,12 @@ import "./globals.css";
 export const metadata: Metadata = {
   title: "VML Tools | Hub Interno",
   description: "Simplifica tu trabajo con estas herramientas y aporta tus tools al team.",
+  openGraph: {
+    title: "VML Tools Hub 🚀",
+    description: "Repositorio interno de scripts, extensiones y utilidades para el equipo de VML.",
+    siteName: "VML Tools",
+    type: "website",
+  }
 };
 
 export default function RootLayout({
