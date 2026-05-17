@@ -1,9 +1,9 @@
 export async function POST(request: Request) {
   const { password } = await request.json();
-  const correctPassword = process.env.GATE_PASSWORD;
+  const correctPassword = process.env.MOD_PASSWORD;
 
   if (!correctPassword) {
-    console.error("GATE_PASSWORD is not set in environment variables");
+    console.error("MOD_PASSWORD is not set in environment variables");
     return Response.json({ error: "Server misconfiguration" }, { status: 500 });
   }
 

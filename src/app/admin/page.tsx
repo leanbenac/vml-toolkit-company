@@ -27,6 +27,7 @@ export default function AdminPage() {
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [toolFile, setToolFile] = useState<File | null>(null);
   const [isUploading, setIsUploading] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
 
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -112,8 +113,9 @@ export default function AdminPage() {
 
       if (error) throw error;
 
-      alert(`¡Genial ${formData.author}! La herramienta se guardó correctamente.`);
-      window.location.href = '/'; // Forzar recarga completa para traer los datos frescos
+      // En lugar de un alert feo, mostramos el estado de éxito premium
+      setIsSuccess(true);
+      // No redirigimos automáticamente, dejamos que el usuario vea el éxito y presione el botón
     } catch (err) {
       console.error("Error inserting tool:", err);
       alert("Hubo un error al guardar la herramienta. Revisa la consola o asegúrate de haber creado el bucket 'tools' en Supabase.");
@@ -132,7 +134,24 @@ export default function AdminPage() {
         <p className={styles.subtitle}>Sube tus scripts o herramientas para que todo el equipo de VML pueda aprovecharlos.</p>
       </div>
 
-      <form className={`${styles.form} ${styles.formNoHover} card-glass`} onSubmit={handleSubmit}>
+      {isSuccess ? (
+        <div className={`${styles.successState} card-glass`}>
+          <div className={styles.successIcon}>✨</div>
+          <h2 className="text-gradient">¡Aporte Recibido!</h2>
+          <p>
+            Gracias <strong>{formData.author}</strong>. Tu herramienta se envió correctamente y está 
+            pendiente de revisión por un moderador.
+          </p>
+          <button 
+            className={styles.submitBtn} 
+            onClick={() => router.push('/')}
+            style={{ marginTop: '2rem' }}
+          >
+            Volver a la Galería
+          </button>
+        </div>
+      ) : (
+        <form className={`${styles.form} ${styles.formNoHover} card-glass`} onSubmit={handleSubmit}>
         <div className={styles.field}>
           <label htmlFor="author">Creador de la herramienta</label>
           <input 
@@ -226,14 +245,18 @@ export default function AdminPage() {
             onDrop={(e) => handleDrop(e, 'image')}
             style={{ position: 'relative', overflow: 'hidden' }}
           >
-            {imageFile && (
+            {imageFile ? (
               <img 
                 src={URL.createObjectURL(imageFile)} 
                 alt="Preview" 
-                style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover', opacity: 0.3, zIndex: 0 }}
+                style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover', zIndex: 0 }}
               />
+            ) : (
+              <>
+                <span style={{ position: 'relative', zIndex: 1 }}>🖼️ Imagen o Icono</span>
+                <p style={{ position: 'relative', zIndex: 1 }}>Arrastra o selecciona previsualización</p>
+              </>
             )}
-            <span style={{ position: 'relative', zIndex: 1 }}>🖼️ Imagen o Icono</span>
             <input 
               type="file" 
               accept="image/*" 
@@ -241,22 +264,32 @@ export default function AdminPage() {
               onChange={(e) => e.target.files && setImageFile(e.target.files[0])}
               style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', opacity: 0, zIndex: 2, cursor: 'pointer' }}
             />
-            <p style={{ position: 'relative', zIndex: 1 }}>
-              {imageFile ? imageFile.name : "Arrastra o selecciona previsualización"}
-            </p>
           </div>
+          
           <div 
             className={styles.uploadBox}
             onDragOver={handleDragOver}
             onDrop={(e) => handleDrop(e, 'tool')}
+            style={{ position: 'relative' }}
           >
-            <span>📁 Archivo de la Tool</span>
+            {toolFile ? (
+              <>
+                <span style={{ fontSize: '2.5rem' }}>✅</span>
+                <p style={{ color: 'white', fontWeight: 'bold' }}>{toolFile.name}</p>
+                <p style={{ fontSize: '0.75rem', marginTop: '-0.5rem' }}>Clic para cambiar</p>
+              </>
+            ) : (
+              <>
+                <span>📁 Archivo de la Tool</span>
+                <p>Arrastra o selecciona el archivo (Script, PDF, ZIP)</p>
+              </>
+            )}
             <input 
               type="file" 
               className={styles.fileInput} 
               onChange={(e) => e.target.files && setToolFile(e.target.files[0])}
+              style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', opacity: 0, zIndex: 2, cursor: 'pointer' }}
             />
-            <p>{toolFile ? toolFile.name : "Arrastra o selecciona el archivo (Script, PDF, ZIP)"}</p>
           </div>
         </div>
 
@@ -264,6 +297,7 @@ export default function AdminPage() {
           {isUploading ? 'Subiendo archivos...' : 'Publicar Herramienta'}
         </button>
       </form>
+      )}
     </div>
   );
 }

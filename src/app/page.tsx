@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
+import Link from "next/link";
 import { ToolGrid } from "@/components/ToolGrid/ToolGrid";
 import { ToolCard } from "@/components/ToolCard/ToolCard";
 import { supabase } from "@/lib/supabase";
@@ -43,6 +44,7 @@ export default function Home() {
         const { data, error } = await supabase
           .from("tools")
           .select("*")
+          .eq("is_approved", true)
           .order("created_at", { ascending: false });
 
         if (error) throw error;
@@ -209,7 +211,12 @@ export default function Home() {
       </p>
 
       <ToolGrid>
-        {visibleTools.length > 0 ? (
+        {isLoading ? (
+          // Skeleton Loader
+          Array.from({ length: 6 }).map((_, i) => (
+            <div key={`skeleton-${i}`} className={styles.skeletonCard} />
+          ))
+        ) : visibleTools.length > 0 ? (
           visibleTools.map((tool, index) => (
             <div 
               key={tool.id} 

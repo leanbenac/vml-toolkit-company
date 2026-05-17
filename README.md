@@ -1,36 +1,50 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# VML Tools Hub 🚀
 
-## Getting Started
+VML Tools Hub es un repositorio interno y plataforma dinámica diseñada para que el equipo de VML comparta, descubre y gestione herramientas, scripts, extensiones y recursos útiles para su día a día.
 
-First, run the development server:
+## 🌟 Características Principales
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+* **Galería Interactiva**: Visualiza todas las herramientas disponibles, con filtros por categoría y búsqueda en tiempo real.
+* **Sistema de Likes**: Guarda tus herramientas favoritas para saber cuáles son las más populares en el equipo.
+* **Subida de Aportes**: Cualquier miembro puede subir una herramienta (imagen y archivo) desde el panel `/admin`.
+* **Moderación Segura**: Las herramientas subidas quedan pendientes de revisión. Un moderador puede aprobarlas o rechazarlas desde el panel oculto `/moderator`.
+* **Almacenamiento Cloud**: Integración completa con Supabase Database y Storage.
+* **Diseño Premium**: Interfaz moderna, "glassmorphism" y animaciones fluidas utilizando Next.js App Router y CSS Modules.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 🛠️ Tecnologías Utilizadas
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+* **Framework**: [Next.js 15+](https://nextjs.org/) (App Router)
+* **Estilos**: Vanilla CSS con CSS Modules (`.module.css`) + variables CSS globales.
+* **Backend as a Service**: [Supabase](https://supabase.com/) (PostgreSQL + Storage).
+* **Despliegue**: Optimizado para [Vercel](https://vercel.com).
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 🚀 Inicio Rápido (Desarrollo Local)
 
-## Learn More
+1. **Clonar e instalar dependencias:**
+   ```bash
+   git clone <tu-repo>
+   cd vml-toolkit-company
+   npm install
+   ```
 
-To learn more about Next.js, take a look at the following resources:
+2. **Configurar Variables de Entorno:**
+   Crea un archivo `.env.local` en la raíz del proyecto basándote en la configuración de Supabase:
+   ```env
+   NEXT_PUBLIC_SUPABASE_URL=tu_url_de_supabase
+   NEXT_PUBLIC_SUPABASE_ANON_KEY=tu_anon_key_de_supabase
+   GATE_PASSWORD=contraseña_general_para_subir (opcional)
+   MOD_PASSWORD=contraseña_de_moderador (opcional)
+   ```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+3. **Correr el servidor:**
+   ```bash
+   npm run dev
+   ```
+   Abre [http://localhost:3000](http://localhost:3000) en tu navegador.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
 
-## Deploy on Vercel
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## 🔒 Rutas Especiales
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+* `/admin`: Formulario para subir nuevas herramientas al hub.
+* `/moderator`: Panel protegido para aprobar o eliminar las herramientas enviadas.
