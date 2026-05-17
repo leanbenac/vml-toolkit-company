@@ -1,0 +1,233 @@
+.card {
+  border-radius: 20px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.3s ease;
+  position: relative;
+}
+
+.trendingCard {
+  border-color: rgba(124, 58, 237, 0.4);
+  box-shadow: 0 0 25px rgba(124, 58, 237, 0.1);
+}
+
+.trendingBadge {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  z-index: 10;
+  background: linear-gradient(135deg, var(--accent), #a855f7);
+  color: white;
+  padding: 6px 14px;
+  border-radius: 8px;
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  box-shadow: 0 4px 15px rgba(124, 58, 237, 0.5);
+  animation: float 3s ease-in-out infinite;
+  white-space: nowrap;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-3px); }
+}
+
+/* Image */
+.imageContainer {
+  position: relative;
+  width: 100%;
+  height: 180px;
+  background: rgba(255, 255, 255, 0.02);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-bottom: 1px solid var(--card-border);
+  overflow: hidden;
+}
+
+.image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.03), transparent 70%);
+}
+
+.neonWrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(var(--neon-color-rgb), 0.1) 0%, transparent 70%);
+  position: relative;
+}
+
+.placeholderLetter {
+  font-size: 3.5rem;
+  font-weight: 800;
+  color: white;
+  line-height: 1;
+  text-shadow: 0 0 20px var(--neon-color), 0 0 40px var(--neon-color);
+  opacity: 0.9;
+  filter: drop-shadow(0 0 10px var(--neon-color));
+}
+
+/* Category badge */
+.categoryBadge {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: rgba(124, 58, 237, 0.2);
+  border: 1px solid rgba(124, 58, 237, 0.4);
+  color: #c4b5fd;
+  backdrop-filter: blur(6px);
+}
+
+/* Content */
+.content {
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+.title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 0.6rem;
+  color: white;
+}
+
+.description {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin-bottom: 1.25rem;
+  flex-grow: 1;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.metaInfo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 1.5rem;
+}
+
+.authorInfo {
+  font-size: 0.75rem;
+  color: #94a3b8;
+  font-weight: 500;
+  opacity: 0.8;
+}
+
+.authorLabel {
+  color: #64748b;
+  font-weight: 400;
+  margin-right: 2px;
+}
+
+.teamBadge {
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 3px 8px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: white;
+  white-space: nowrap;
+}
+
+/* Actions row */
+.actions {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.button {
+  flex: 1;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--card-border);
+  padding: 0.75rem 1rem;
+  border-radius: 12px;
+  text-align: center;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: white;
+  transition: all 0.2s ease;
+}
+
+.button:hover {
+  background: var(--accent);
+  border-color: var(--accent);
+  opacity: 1;
+}
+
+/* Like Button */
+.likeBtn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--card-border);
+  padding: 0.75rem 1rem;
+  border-radius: 12px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.likeBtn:hover {
+  border-color: #f43f5e;
+  background: rgba(244, 63, 94, 0.08);
+  color: #f43f5e;
+}
+
+.liked {
+  border-color: #f43f5e !important;
+  background: rgba(244, 63, 94, 0.12) !important;
+  color: #f43f5e !important;
+}
+
+.likeIcon {
+  font-size: 1rem;
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.likeBtn:hover .likeIcon,
+.liked .likeIcon {
+  transform: scale(1.25);
+}
+
+.likeCount {
+  font-variant-numeric: tabular-nums;
+}
