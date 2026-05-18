@@ -41,7 +41,7 @@
   position: relative;
   width: 100%;
   height: 180px;
-  background: rgba(255, 255, 255, 0.02);
+  background: #0d0d12;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -49,10 +49,33 @@
   overflow: hidden;
 }
 
+.blurredBackdrop {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-size: cover;
+  background-position: center;
+  filter: blur(16px) brightness(0.45);
+  opacity: 0.7;
+  transform: scale(1.15); /* Evitar bordes blancos en blur */
+  z-index: 1;
+}
+
 .image {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
+  position: relative;
+  z-index: 2;
+  max-width: 90%;
+  max-height: 90%;
+  object-fit: contain;
+  border-radius: 12px;
+  filter: drop-shadow(0 8px 20px rgba(0, 0, 0, 0.5));
+  transition: transform 0.5s cubic-bezier(0.2, 1, 0.3, 1);
+}
+
+.card:hover .image {
+  transform: scale(1.05);
 }
 
 .placeholder {
@@ -90,16 +113,20 @@
   position: absolute;
   top: 12px;
   right: 12px;
-  font-size: 0.7rem;
-  font-weight: 600;
+  z-index: 10; /* FLOAT ABOVE IMAGES */
+  font-size: 0.65rem;
+  font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.08em;
   padding: 4px 10px;
   border-radius: 999px;
-  background: rgba(124, 58, 237, 0.2);
-  border: 1px solid rgba(124, 58, 237, 0.4);
-  color: #c4b5fd;
-  backdrop-filter: blur(6px);
+  background: rgba(var(--neon-color-rgb, 124, 58, 237), 0.15) !important;
+  border: 1px solid rgba(var(--neon-color-rgb, 124, 58, 237), 0.45) !important;
+  color: var(--neon-color, #c4b5fd) !important;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  box-shadow: 0 0 12px rgba(var(--neon-color-rgb, 124, 58, 237), 0.15);
+  text-shadow: 0 0 8px rgba(var(--neon-color-rgb, 124, 58, 237), 0.35);
 }
 
 /* Content */
@@ -115,11 +142,15 @@
   font-weight: 600;
   margin-bottom: 0.6rem;
   color: white;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 .description {
   font-size: 0.875rem;
-  color: var(--text-secondary);
+  color: #cbd5e1; /* Slate-300 for superior contrast and readability */
   line-height: 1.6;
   margin-bottom: 1.25rem;
   flex-grow: 1;

@@ -7,7 +7,7 @@ import { supabase } from '@/lib/supabase';
 import styles from './admin.module.css';
 
 const CATEGORIES = [
-  { value: "Extensiones", label: "Extensiones" },
+  { value: "Extensiones", label: "Extensiones Chrome" },
   { value: "AppWebs", label: "AppWebs" },
   { value: "Scripts", label: "Scripts" },
   { value: "Bots", label: "Bots" },
@@ -176,7 +176,7 @@ export default function AdminPage() {
             id="author"
             type="text" 
             placeholder="Ej: Leandro Benac"
-            value={formData.author}
+            value={formData.author || ''}
             onChange={(e) => setFormData({...formData, author: e.target.value})}
             required
             className="glass"
@@ -189,7 +189,7 @@ export default function AdminPage() {
             id="team"
             type="text" 
             placeholder="Ej: Ford, Colgate, Internal"
-            value={formData.team}
+            value={formData.team || ''}
             onChange={(e) => setFormData({...formData, team: e.target.value})}
             required
             className="glass"
@@ -202,7 +202,7 @@ export default function AdminPage() {
             id="name"
             type="text" 
             placeholder="Ej: Optimizador de Imágenes"
-            value={formData.name}
+            value={formData.name || ''}
             onChange={(e) => setFormData({...formData, name: e.target.value})}
             required
             className="glass"
@@ -210,13 +210,19 @@ export default function AdminPage() {
         </div>
 
         <div className={styles.field}>
-          <label htmlFor="description">Descripción Breve</label>
+          <div className={styles.labelRow}>
+            <label htmlFor="description">Descripción Breve</label>
+            <span className={`${styles.charCounter} ${(formData.description || '').length >= 180 ? styles.charCounterWarning : ''}`}>
+              {(formData.description || '').length} / 200
+            </span>
+          </div>
           <textarea 
             id="description"
             placeholder="Explica qué hace y cómo ayuda al equipo..."
-            value={formData.description}
+            value={formData.description || ''}
             onChange={(e) => setFormData({...formData, description: e.target.value})}
             required
+            maxLength={200}
             className="glass"
           />
         </div>
@@ -257,57 +263,67 @@ export default function AdminPage() {
         </div>
 
         <div className={styles.uploadGrid}>
-          <div 
-            className={styles.uploadBox}
-            onDragOver={handleDragOver}
-            onDrop={(e) => handleDrop(e, 'image')}
-            style={{ position: 'relative', overflow: 'hidden' }}
-          >
-            {imageFile ? (
-              <img 
-                src={URL.createObjectURL(imageFile)} 
-                alt="Preview" 
-                style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover', zIndex: 0 }}
+          <div className={styles.uploadGroup}>
+            <div 
+              className={styles.uploadBox}
+              onDragOver={handleDragOver}
+              onDrop={(e) => handleDrop(e, 'image')}
+              style={{ position: 'relative', overflow: 'hidden' }}
+            >
+              {imageFile && typeof window !== 'undefined' ? (
+                <img 
+                  src={URL.createObjectURL(imageFile)} 
+                  alt="Preview" 
+                  style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover', zIndex: 0 }}
+                />
+              ) : (
+                <>
+                  <span style={{ position: 'relative', zIndex: 1 }}>🖼️ Imagen o Icono</span>
+                  <p style={{ position: 'relative', zIndex: 1, marginBottom: 0 }}>Arrastra o selecciona previsualización</p>
+                </>
+              )}
+              <input 
+                type="file" 
+                accept="image/*" 
+                className={styles.fileInput} 
+                onChange={(e) => e.target.files && setImageFile(e.target.files[0])}
+                style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', opacity: 0, zIndex: 2, cursor: 'pointer' }}
               />
-            ) : (
-              <>
-                <span style={{ position: 'relative', zIndex: 1 }}>🖼️ Imagen o Icono</span>
-                <p style={{ position: 'relative', zIndex: 1 }}>Arrastra o selecciona previsualización</p>
-              </>
-            )}
-            <input 
-              type="file" 
-              accept="image/*" 
-              className={styles.fileInput} 
-              onChange={(e) => e.target.files && setImageFile(e.target.files[0])}
-              style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', opacity: 0, zIndex: 2, cursor: 'pointer' }}
-            />
+            </div>
+            <p className={styles.uploadHelper}>
+              Recomendado: Proporción 16:9 (800x450px) o icono cuadrado.
+            </p>
           </div>
           
-          <div 
-            className={styles.uploadBox}
-            onDragOver={handleDragOver}
-            onDrop={(e) => handleDrop(e, 'tool')}
-            style={{ position: 'relative' }}
-          >
-            {toolFile ? (
-              <>
-                <span style={{ fontSize: '2.5rem' }}>✅</span>
-                <p style={{ color: 'white', fontWeight: 'bold' }}>{toolFile.name}</p>
-                <p style={{ fontSize: '0.75rem', marginTop: '-0.5rem' }}>Clic para cambiar</p>
-              </>
-            ) : (
-              <>
-                <span>📁 Archivo de la Tool</span>
-                <p>Arrastra o selecciona el archivo (Script, PDF, ZIP)</p>
-              </>
-            )}
-            <input 
-              type="file" 
-              className={styles.fileInput} 
-              onChange={(e) => e.target.files && setToolFile(e.target.files[0])}
-              style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', opacity: 0, zIndex: 2, cursor: 'pointer' }}
-            />
+          <div className={styles.uploadGroup}>
+            <div 
+              className={styles.uploadBox}
+              onDragOver={handleDragOver}
+              onDrop={(e) => handleDrop(e, 'tool')}
+              style={{ position: 'relative' }}
+            >
+              {toolFile ? (
+                <>
+                  <span style={{ fontSize: '2.5rem' }}>✅</span>
+                  <p style={{ color: 'white', fontWeight: 'bold' }}>{toolFile.name}</p>
+                  <p style={{ fontSize: '0.75rem', marginTop: '-0.5rem' }}>Clic para cambiar</p>
+                </>
+              ) : (
+                <>
+                  <span>📁 Archivo de la Tool</span>
+                  <p>Arrastra o selecciona el archivo</p>
+                </>
+              )}
+              <input 
+                type="file" 
+                className={styles.fileInput} 
+                onChange={(e) => e.target.files && setToolFile(e.target.files[0])}
+                style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', opacity: 0, zIndex: 2, cursor: 'pointer' }}
+              />
+            </div>
+            <p className={styles.uploadHelper}>
+              Formatos admitidos: Script (JS, PY), PDF, ZIP o instaladores.
+            </p>
           </div>
         </div>
 

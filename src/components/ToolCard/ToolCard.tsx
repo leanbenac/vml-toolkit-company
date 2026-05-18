@@ -17,7 +17,7 @@ interface ToolCardProps {
 }
 
 const categoryLabels: Record<string, string> = {
-  Extensiones: 'Extensiones',
+  Extensiones: 'Extensiones Chrome',
   AppWebs: 'AppWebs',
   Scripts: 'Scripts',
   Bots: 'Bots',
@@ -30,6 +30,14 @@ const categoryColors: Record<string, string> = {
   Scripts: '#8b5cf6',
   Bots: '#f43f5e',
   Docs: '#f59e0b',
+};
+
+const categoryRGBs: Record<string, string> = {
+  Extensiones: '6, 182, 212',
+  AppWebs: '16, 185, 129',
+  Scripts: '139, 92, 246',
+  Bots: '244, 63, 94',
+  Docs: '245, 158, 11',
 };
 
 export const ToolCard: React.FC<ToolCardProps> = ({
@@ -58,7 +66,13 @@ export const ToolCard: React.FC<ToolCardProps> = ({
       
       <div className={styles.imageContainer}>
         {imageUrl ? (
-          <img src={imageUrl} alt={name} className={styles.image} />
+          <>
+            <div 
+              className={styles.blurredBackdrop} 
+              style={{ backgroundImage: `url(${imageUrl})` }}
+            />
+            <img src={imageUrl} alt={name} className={styles.image} />
+          </>
         ) : (
           <div className={styles.placeholder}>
             <div 
@@ -69,17 +83,23 @@ export const ToolCard: React.FC<ToolCardProps> = ({
             </div>
           </div>
         )}
-        <span className={styles.categoryBadge}>
+        <span 
+          className={styles.categoryBadge}
+          style={{
+            '--neon-color': neonColor,
+            '--neon-color-rgb': categoryRGBs[category] || '255, 255, 255'
+          } as React.CSSProperties}
+        >
           {categoryLabels[category] ?? category}
         </span>
       </div>
 
       <div className={styles.content}>
         <div className={styles.headerRow}>
-          <h3 className={styles.title}>{name}</h3>
+          <h3 className={styles.title} title={name}>{name}</h3>
         </div>
         
-        <p className={styles.description}>{description}</p>
+        <p className={styles.description} title={description}>{description}</p>
         
         <div className={styles.metaInfo}>
           {author && (

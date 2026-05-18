@@ -51,10 +51,30 @@
   gap: 0.75rem;
 }
 
+.labelRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
 .field label {
   font-size: 0.9rem;
   font-weight: 500;
   color: var(--foreground);
+}
+
+.charCounter {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  opacity: 0.8;
+  font-variant-numeric: tabular-nums;
+  transition: color 0.3s ease, opacity 0.3s ease;
+}
+
+.charCounterWarning {
+  color: #ef4444 !important;
+  opacity: 1 !important;
+  font-weight: 600;
 }
 
 .field input, 
@@ -186,6 +206,22 @@
   gap: 1.5rem;
 }
 
+.uploadGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.uploadHelper {
+  font-size: 0.72rem !important;
+  color: #a1a1aa !important;
+  margin-top: 0.25rem;
+  margin-bottom: 0;
+  line-height: 1.4;
+  text-align: center;
+  opacity: 0.85;
+}
+
 .uploadBox {
   position: relative;
   border: 2px dashed var(--glass-border);
@@ -197,6 +233,8 @@
   flex-direction: column;
   align-items: center;
   gap: 0.5rem;
+  min-height: 140px;
+  justify-content: center;
 }
 
 .uploadBox:hover {
