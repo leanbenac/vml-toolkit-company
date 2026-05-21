@@ -261,6 +261,7 @@ export default function AdminPage() {
                 ))}
               </div>
             )}
+          </div>
         </div>
 
         <div className={styles.field}>
