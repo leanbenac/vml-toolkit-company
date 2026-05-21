@@ -38,6 +38,28 @@ export default function HomeClient({ initialTools }: HomeClientProps) {
   const [likedIds, setLikedIds] = useState<Set<string>>(new Set());
   const [visibleCount, setVisibleCount] = useState(6);
 
+  // Estados para modal de edición
+  const [editingTool, setEditingTool] = useState<Tool | null>(null);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [editPin, setEditPin] = useState("");
+  const [isPinVerified, setIsPinVerified] = useState(false);
+  const [pinError, setPinError] = useState("");
+  const [isVerifyingPin, setIsVerifyingPin] = useState(false);
+  const [isNewPinNeeded, setIsNewPinNeeded] = useState(false);
+  
+  // Estado de formulario
+  const [editForm, setEditForm] = useState({
+    name: "",
+    description: "",
+    category: "AppWebs",
+    author: "",
+    team: "",
+    fileUrl: "",
+    imageUrl: "",
+  });
+  const [isSavingEdit, setIsSavingEdit] = useState(false);
+  const [saveError, setSaveError] = useState("");
+
   // Sync tools when initialTools changes (for Server-Side updates)
   useEffect(() => {
     setTools(initialTools);
@@ -85,6 +107,103 @@ export default function HomeClient({ initialTools }: HomeClientProps) {
       await supabase.from("tools").update({ likes: newLikesCount }).eq("id", id);
     } catch (e) {
       console.error("Error updating likes in Supabase", e);
+    }
+  };
+
+  const handleEditClick = (id: string) => {
+    const tool = tools.find(t => t.id === id);
+    if (!tool) return;
+    setEditingTool(tool);
+    setEditForm({
+      name: tool.name,
+      description: tool.description,
+      category: tool.category,
+      author: tool.author,
+      team: tool.team,
+      fileUrl: tool.fileUrl,
+      imageUrl: tool.imageUrl || "",
+    });
+    setEditPin("");
+    setIsPinVerified(false);
+    setPinError("");
+    setSaveError("");
+    setIsEditModalOpen(true);
+  };
+
+  const handleVerifyPin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingTool) return;
+    setIsVerifyingPin(true);
+    setPinError("");
+    try {
+      const res = await fetch("/api/tools/edit", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: editingTool.id, pin: editPin }),
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        setIsPinVerified(true);
+        setIsNewPinNeeded(!!data.isNewPinNeeded);
+      } else {
+        setPinError(data.error || "Error al verificar el PIN");
+      }
+    } catch (err) {
+      setPinError("Error de conexión con el servidor");
+    } finally {
+      setIsVerifyingPin(false);
+    }
+  };
+
+  const handleSaveEdit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingTool) return;
+    setIsSavingEdit(true);
+    setSaveError("");
+    try {
+      const res = await fetch("/api/tools/edit", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          id: editingTool.id,
+          pin: editPin,
+          name: editForm.name,
+          description: editForm.description,
+          category: editForm.category,
+          author: editForm.author,
+          team: editForm.team,
+          file_url: editForm.fileUrl,
+          image_url: editForm.imageUrl || null,
+        }),
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        // Actualizar localmente
+        setTools((prev) =>
+          prev.map((t) =>
+            t.id === editingTool.id
+              ? {
+                  ...t,
+                  name: editForm.name,
+                  description: editForm.description,
+                  category: editForm.category,
+                  author: editForm.author,
+                  team: editForm.team,
+                  fileUrl: editForm.fileUrl,
+                  imageUrl: editForm.imageUrl || undefined,
+                }
+              : t
+          )
+        );
+        setIsEditModalOpen(false);
+        setEditingTool(null);
+      } else {
+        setSaveError(data.error || "Error al guardar cambios");
+      }
+    } catch (err) {
+      setSaveError("Error de conexión al guardar");
+    } finally {
+      setIsSavingEdit(false);
     }
   };
 
@@ -201,6 +320,7 @@ export default function HomeClient({ initialTools }: HomeClientProps) {
                 likes={tool.likes}
                 liked={likedIds.has(tool.id)}
                 onLike={handleLike}
+                onEdit={handleEditClick}
                 isTrending={tool.id === filteredTools[0]?.id && tool.likes > 0}
                 author={tool.author}
                 team={tool.team}
@@ -238,6 +358,151 @@ export default function HomeClient({ initialTools }: HomeClientProps) {
           </p>
         </div>
       </footer>
+
+      {/* Modal de Edición Glassmorphic */}
+      {isEditModalOpen && editingTool && (
+        <div className={styles.modalOverlay} onClick={() => setIsEditModalOpen(false)}>
+          <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
+            <div className={styles.modalHeader}>
+              <h2 className={styles.modalTitle}>Editar Tool</h2>
+              <p className={styles.modalSubtitle}>{editingTool.name}</p>
+            </div>
+
+            {!isPinVerified ? (
+              <form onSubmit={handleVerifyPin} className={styles.modalForm}>
+                <div className={styles.modalField}>
+                  <label htmlFor="modalPin">Introduce el PIN de edición para esta herramienta</label>
+                  <input
+                    id="modalPin"
+                    type="password"
+                    required
+                    placeholder="PIN de edición"
+                    value={editPin}
+                    onChange={(e) => setEditPin(e.target.value)}
+                    className={styles.modalInput}
+                    autoFocus
+                  />
+                </div>
+                {pinError && <p className={styles.modalError}>{pinError}</p>}
+                <div className={styles.modalActions}>
+                  <button type="button" className={styles.cancelBtn} onClick={() => setIsEditModalOpen(false)}>
+                    Cancelar
+                  </button>
+                  <button type="submit" className={styles.saveBtn} disabled={isVerifyingPin}>
+                    {isVerifyingPin ? "Verificando..." : "Validar"}
+                  </button>
+                </div>
+              </form>
+            ) : (
+              <form onSubmit={handleSaveEdit} className={styles.modalForm}>
+                {isNewPinNeeded && (
+                  <p style={{ color: '#c4b5fd', fontSize: '0.8rem', marginBottom: '0.5rem', backgroundColor: 'rgba(139, 92, 246, 0.1)', padding: '0.5rem 0.75rem', borderRadius: '8px', border: '1px solid rgba(139, 92, 246, 0.2)' }}>
+                    💡 Esta herramienta antigua no tiene un PIN. El PIN ingresado arriba se registrará como su nuevo PIN.
+                  </p>
+                )}
+
+                <div className={styles.modalField}>
+                  <label htmlFor="editName">Nombre de la Herramienta</label>
+                  <input
+                    id="editName"
+                    type="text"
+                    required
+                    value={editForm.name}
+                    onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
+                    className={styles.modalInput}
+                  />
+                </div>
+
+                <div className={styles.modalField}>
+                  <label htmlFor="editDescription">Descripción</label>
+                  <textarea
+                    id="editDescription"
+                    required
+                    maxLength={200}
+                    value={editForm.description}
+                    onChange={(e) => setEditForm({ ...editForm, description: e.target.value })}
+                    className={styles.modalTextarea}
+                  />
+                </div>
+
+                <div className={styles.modalField}>
+                  <label htmlFor="editCategory">Categoría</label>
+                  <select
+                    id="editCategory"
+                    value={editForm.category}
+                    onChange={(e) => setEditForm({ ...editForm, category: e.target.value })}
+                    className={styles.modalSelect}
+                  >
+                    <option value="Extensiones">Extensiones Chrome</option>
+                    <option value="AppWebs">AppWebs</option>
+                    <option value="Scripts">Scripts</option>
+                    <option value="Bots">Bots</option>
+                    <option value="Docs">Docs</option>
+                  </select>
+                </div>
+
+                <div className={styles.modalField}>
+                  <label htmlFor="editAuthor">Autor</label>
+                  <input
+                    id="editAuthor"
+                    type="text"
+                    required
+                    value={editForm.author}
+                    onChange={(e) => setEditForm({ ...editForm, author: e.target.value })}
+                    className={styles.modalInput}
+                  />
+                </div>
+
+                <div className={styles.modalField}>
+                  <label htmlFor="editTeam">Equipo / Marca</label>
+                  <input
+                    id="editTeam"
+                    type="text"
+                    required
+                    value={editForm.team}
+                    onChange={(e) => setEditForm({ ...editForm, team: e.target.value })}
+                    className={styles.modalInput}
+                  />
+                </div>
+
+                <div className={styles.modalField}>
+                  <label htmlFor="editFileUrl">URL del Archivo</label>
+                  <input
+                    id="editFileUrl"
+                    type="text"
+                    required
+                    value={editForm.fileUrl}
+                    onChange={(e) => setEditForm({ ...editForm, fileUrl: e.target.value })}
+                    className={styles.modalInput}
+                  />
+                </div>
+
+                <div className={styles.modalField}>
+                  <label htmlFor="editImageUrl">URL de la Imagen (Opcional)</label>
+                  <input
+                    id="editImageUrl"
+                    type="text"
+                    value={editForm.imageUrl}
+                    onChange={(e) => setEditForm({ ...editForm, imageUrl: e.target.value })}
+                    className={styles.modalInput}
+                  />
+                </div>
+
+                {saveError && <p className={styles.modalError}>{saveError}</p>}
+
+                <div className={styles.modalActions}>
+                  <button type="button" className={styles.cancelBtn} onClick={() => setIsEditModalOpen(false)}>
+                    Cancelar
+                  </button>
+                  <button type="submit" className={styles.saveBtn} disabled={isSavingEdit}>
+                    {isSavingEdit ? "Guardando..." : "Guardar Cambios"}
+                  </button>
+                </div>
+              </form>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

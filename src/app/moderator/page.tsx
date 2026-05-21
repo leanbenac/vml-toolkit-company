@@ -137,6 +137,11 @@ export default function ModeratorPage() {
           <button type="submit" className={styles.submitBtn} disabled={isLoggingIn}>
             {isLoggingIn ? 'Verificando...' : 'Entrar'}
           </button>
+          {process.env.NODE_ENV === "development" && (
+            <p style={{ marginTop: "12px", color: "rgba(255, 255, 255, 0.5)", fontSize: "0.8rem", textAlign: "center" }}>
+              (Desarrollo local: podés usar <strong>mod</strong>)
+            </p>
+          )}
         </form>
       </div>
     );

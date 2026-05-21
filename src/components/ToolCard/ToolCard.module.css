@@ -220,6 +220,30 @@
   opacity: 1;
 }
 
+/* Edit Button */
+.editBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--card-border);
+  padding: 0.75rem;
+  border-radius: 12px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  transition: all 0.2s ease;
+  width: 42px;
+  height: 42px;
+  flex-shrink: 0;
+}
+
+.editBtn:hover {
+  border-color: var(--accent);
+  background: rgba(var(--neon-color-rgb, 124, 58, 237), 0.1);
+  color: var(--accent);
+}
+
 /* Like Button */
 .likeBtn {
   display: flex;

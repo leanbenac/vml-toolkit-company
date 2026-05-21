@@ -86,6 +86,11 @@ export const PasswordGate = ({ children }: { children: React.ReactNode }) => {
 
         <p className={styles.hint}>
           Pedile la contraseña a tu team leader 🔑
+          {process.env.NODE_ENV === "development" && (
+            <span style={{ display: "block", marginTop: "8px", color: "rgba(255, 255, 255, 0.6)", fontSize: "0.8rem" }}>
+              (Desarrollo local: podés usar <strong>vml2026</strong>)
+            </span>
+          )}
         </p>
       </form>
     </div>

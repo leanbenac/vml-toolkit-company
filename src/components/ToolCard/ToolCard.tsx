@@ -11,6 +11,7 @@ interface ToolCardProps {
   likes: number;
   liked: boolean;
   onLike: (id: string) => void;
+  onEdit: (id: string) => void;
   isTrending?: boolean;
   author?: string;
   team?: string; // Nuevo campo para la marca o equipo
@@ -50,6 +51,7 @@ export const ToolCard: React.FC<ToolCardProps> = ({
   likes,
   liked,
   onLike,
+  onEdit,
   isTrending,
   author,
   team,
@@ -123,6 +125,18 @@ export const ToolCard: React.FC<ToolCardProps> = ({
           >
             Descargar
           </a>
+
+          <button
+            onClick={(e) => {
+              e.preventDefault();
+              onEdit(id);
+            }}
+            className={styles.editBtn}
+            title="Editar herramienta"
+            aria-label="Editar herramienta"
+          >
+            ✏️
+          </button>
 
           <button
             className={`${styles.likeBtn} ${liked ? styles.liked : ''}`}

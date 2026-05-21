@@ -22,6 +22,7 @@ export default function AdminPage() {
     category: 'AppWebs',
     author: '',
     team: '',
+    editPin: '',
   });
 
   const [imageFile, setImageFile] = useState<File | null>(null);
@@ -113,6 +114,7 @@ export default function AdminPage() {
           // DESCOMENTAR PARA ACTIVAR LA MODERACIÓN (Si se omite, en Supabase el default es false)
           // is_approved: false, 
           is_approved: true, // Auto-aprobar para adopción rápida (Quitar esto cuando se active el moderador)
+          edit_pin: formData.editPin || null,
         }
       ]);
 
@@ -259,7 +261,19 @@ export default function AdminPage() {
                 ))}
               </div>
             )}
-          </div>
+        </div>
+
+        <div className={styles.field}>
+          <label htmlFor="editPin">PIN de Edición (Opcional - clave para poder modificar la herramienta después)</label>
+          <input 
+            id="editPin"
+            type="password" 
+            placeholder="Ej: 1234"
+            maxLength={10}
+            value={formData.editPin || ''}
+            onChange={(e) => setFormData({...formData, editPin: e.target.value})}
+            className="glass"
+          />
         </div>
 
         <div className={styles.uploadGrid}>
