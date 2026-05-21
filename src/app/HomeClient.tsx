@@ -59,6 +59,8 @@ export default function HomeClient({ initialTools }: HomeClientProps) {
   });
   const [isSavingEdit, setIsSavingEdit] = useState(false);
   const [saveError, setSaveError] = useState("");
+  const [newImageFile, setNewImageFile] = useState<File | null>(null);
+  const [newToolFile, setNewToolFile] = useState<File | null>(null);
 
   // Sync tools when initialTools changes (for Server-Side updates)
   useEffect(() => {
@@ -123,11 +125,26 @@ export default function HomeClient({ initialTools }: HomeClientProps) {
       fileUrl: tool.fileUrl,
       imageUrl: tool.imageUrl || "",
     });
+    setNewImageFile(null);
+    setNewToolFile(null);
     setEditPin("");
     setIsPinVerified(false);
     setPinError("");
     setSaveError("");
     setIsEditModalOpen(true);
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+  };
+
+  const handleDrop = (e: React.DragEvent, type: "image" | "tool") => {
+    e.preventDefault();
+    const files = e.dataTransfer.files;
+    if (files.length > 0) {
+      if (type === "image") setNewImageFile(files[0]);
+      else setNewToolFile(files[0]);
+    }
   };
 
   const handleVerifyPin = async (e: React.FormEvent) => {
@@ -161,6 +178,43 @@ export default function HomeClient({ initialTools }: HomeClientProps) {
     setIsSavingEdit(true);
     setSaveError("");
     try {
+      let finalImageUrl = editForm.imageUrl || null;
+      let finalFileUrl = editForm.fileUrl;
+
+      // Subir imagen si se seleccionó una nueva
+      if (newImageFile) {
+        const imageExt = newImageFile.name.split('.').pop();
+        const imageName = `${Date.now()}-img.${imageExt}`;
+        const { error: imgError } = await supabase.storage
+          .from('tools')
+          .upload(`images/${imageName}`, newImageFile);
+          
+        if (imgError) throw imgError;
+        
+        const { data: imgUrlData } = supabase.storage
+          .from('tools')
+          .getPublicUrl(`images/${imageName}`);
+        
+        finalImageUrl = imgUrlData.publicUrl;
+      }
+
+      // Subir archivo si se seleccionó uno nuevo
+      if (newToolFile) {
+        const fileExt = newToolFile.name.split('.').pop();
+        const fileName = `${Date.now()}-file.${fileExt}`;
+        const { error: fileError } = await supabase.storage
+          .from('tools')
+          .upload(`files/${fileName}`, newToolFile);
+          
+        if (fileError) throw fileError;
+        
+        const { data: fileUrlData } = supabase.storage
+          .from('tools')
+          .getPublicUrl(`files/${fileName}`);
+        
+        finalFileUrl = fileUrlData.publicUrl;
+      }
+
       const res = await fetch("/api/tools/edit", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
@@ -172,8 +226,8 @@ export default function HomeClient({ initialTools }: HomeClientProps) {
           category: editForm.category,
           author: editForm.author,
           team: editForm.team,
-          file_url: editForm.fileUrl,
-          image_url: editForm.imageUrl || null,
+          file_url: finalFileUrl,
+          image_url: finalImageUrl,
         }),
       });
       const data = await res.json();
@@ -189,8 +243,8 @@ export default function HomeClient({ initialTools }: HomeClientProps) {
                   category: editForm.category,
                   author: editForm.author,
                   team: editForm.team,
-                  fileUrl: editForm.fileUrl,
-                  imageUrl: editForm.imageUrl || undefined,
+                  fileUrl: finalFileUrl,
+                  imageUrl: finalImageUrl || undefined,
                 }
               : t
           )
@@ -200,8 +254,9 @@ export default function HomeClient({ initialTools }: HomeClientProps) {
       } else {
         setSaveError(data.error || "Error al guardar cambios");
       }
-    } catch (err) {
-      setSaveError("Error de conexión al guardar");
+    } catch (err: any) {
+      console.error("Error al editar la herramienta:", err);
+      setSaveError(err.message || "Error de conexión al guardar");
     } finally {
       setIsSavingEdit(false);
     }
@@ -465,27 +520,81 @@ export default function HomeClient({ initialTools }: HomeClientProps) {
                   />
                 </div>
 
-                <div className={styles.modalField}>
-                  <label htmlFor="editFileUrl">URL del Archivo</label>
-                  <input
-                    id="editFileUrl"
-                    type="text"
-                    required
-                    value={editForm.fileUrl}
-                    onChange={(e) => setEditForm({ ...editForm, fileUrl: e.target.value })}
-                    className={styles.modalInput}
-                  />
-                </div>
-
-                <div className={styles.modalField}>
-                  <label htmlFor="editImageUrl">URL de la Imagen (Opcional)</label>
-                  <input
-                    id="editImageUrl"
-                    type="text"
-                    value={editForm.imageUrl}
-                    onChange={(e) => setEditForm({ ...editForm, imageUrl: e.target.value })}
-                    className={styles.modalInput}
-                  />
+                <div className={styles.uploadGrid}>
+                  <div className={styles.uploadGroup}>
+                    <label style={{ fontSize: '0.8rem', fontWeight: 600, color: '#cbd5e1' }}>Imagen o Icono (Opcional)</label>
+                    <div 
+                      className={styles.uploadBox}
+                      onDragOver={handleDragOver}
+                      onDrop={(e) => handleDrop(e, 'image')}
+                      style={{ position: 'relative', overflow: 'hidden' }}
+                    >
+                      {newImageFile ? (
+                        <img 
+                          src={URL.createObjectURL(newImageFile)} 
+                          alt="Preview" 
+                          style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover', zIndex: 0 }}
+                        />
+                      ) : editForm.imageUrl ? (
+                        <img 
+                          src={editForm.imageUrl} 
+                          alt="Preview" 
+                          style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover', zIndex: 0 }}
+                        />
+                      ) : (
+                        <>
+                          <span style={{ position: 'relative', zIndex: 1 }}>🖼️ Imagen</span>
+                          <p style={{ position: 'relative', zIndex: 1, marginBottom: 0 }}>Arrastra o selecciona</p>
+                        </>
+                      )}
+                      <input 
+                        type="file" 
+                        accept="image/*" 
+                        className={styles.fileInput} 
+                        onChange={(e) => e.target.files && setNewImageFile(e.target.files[0])}
+                        style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', opacity: 0, zIndex: 2, cursor: 'pointer' }}
+                      />
+                    </div>
+                    <p className={styles.uploadHelper}>Proporción 16:9 o icono cuadrado.</p>
+                  </div>
+                  
+                  <div className={styles.uploadGroup}>
+                    <label style={{ fontSize: '0.8rem', fontWeight: 600, color: '#cbd5e1' }}>Archivo de la Tool</label>
+                    <div 
+                      className={styles.uploadBox}
+                      onDragOver={handleDragOver}
+                      onDrop={(e) => handleDrop(e, 'tool')}
+                      style={{ position: 'relative' }}
+                    >
+                      {newToolFile ? (
+                        <>
+                          <span style={{ fontSize: '1.8rem' }}>✅</span>
+                          <p style={{ color: 'white', fontWeight: 'bold', fontSize: '0.75rem', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '100%', padding: '0 4px' }}>{newToolFile.name}</p>
+                          <p style={{ fontSize: '0.65rem', marginTop: '-0.25rem' }}>Clic para cambiar</p>
+                        </>
+                      ) : editForm.fileUrl ? (
+                        <>
+                          <span style={{ fontSize: '1.5rem' }}>📁</span>
+                          <p style={{ color: '#cbd5e1', fontSize: '0.75rem', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '100%', padding: '0 4px' }}>
+                            {editForm.fileUrl.split('/').pop()?.split('?')[0] || 'Archivo actual'}
+                          </p>
+                          <p style={{ fontSize: '0.65rem', marginTop: '-0.25rem' }}>Clic para reemplazar</p>
+                        </>
+                      ) : (
+                        <>
+                          <span>📁 Archivo</span>
+                          <p>Arrastra o selecciona</p>
+                        </>
+                      )}
+                      <input 
+                        type="file" 
+                        className={styles.fileInput} 
+                        onChange={(e) => e.target.files && setNewToolFile(e.target.files[0])}
+                        style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', opacity: 0, zIndex: 2, cursor: 'pointer' }}
+                      />
+                    </div>
+                    <p className={styles.uploadHelper}>Scripts (JS, PY), PDF, ZIP o instaladores.</p>
+                  </div>
                 </div>
 
                 {saveError && <p className={styles.modalError}>{saveError}</p>}
