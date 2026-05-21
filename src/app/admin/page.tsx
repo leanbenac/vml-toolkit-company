@@ -157,7 +157,9 @@ export default function AdminPage() {
           */}
           <button 
             className={styles.submitBtn} 
-            onClick={() => router.push('/')}
+            onClick={() => {
+              window.location.href = '/';
+            }}
             style={{ marginTop: '2rem' }}
           >
             Volver a la Galería
