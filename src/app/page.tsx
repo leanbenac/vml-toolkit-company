@@ -14,7 +14,7 @@ export default async function HomePage() {
   try {
     const { data, error } = await supabase
       .from("tools")
-      .select("id, name, description, category, image_url, file_url, likes, author, team, created_at, is_approved")
+      .select("id, name, description, category, image_url, file_url, author, team, created_at, is_approved, downloads")
       .eq("is_approved", true)
       .order("created_at", { ascending: false });
 
@@ -28,7 +28,7 @@ export default async function HomePage() {
         category: t.category,
         imageUrl: t.image_url,
         fileUrl: t.file_url,
-        likes: t.likes || 0,
+        downloads: t.downloads || 0,
         author: t.author || "",
         team: t.team || "",
       }));

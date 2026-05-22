@@ -8,9 +8,8 @@ interface ToolCardProps {
   category?: string;
   imageUrl?: string;
   fileUrl: string;
-  likes: number;
-  liked: boolean;
-  onLike: (id: string) => void;
+  downloads: number;
+  onDownload: (id: string, fileUrl: string) => void;
   onEdit: (id: string) => void;
   isTrending?: boolean;
   author?: string;
@@ -48,9 +47,8 @@ export const ToolCard: React.FC<ToolCardProps> = ({
   category = 'AppWebs',
   imageUrl,
   fileUrl,
-  likes,
-  liked,
-  onLike,
+  downloads,
+  onDownload,
   onEdit,
   isTrending,
   author,
@@ -117,14 +115,26 @@ export const ToolCard: React.FC<ToolCardProps> = ({
         </div>
 
         <div className={styles.actions}>
-          <a
-            href={fileUrl}
-            target="_blank"
-            rel="noopener noreferrer"
+          <button
+            onClick={(e) => {
+              e.preventDefault();
+              onDownload(id, fileUrl);
+            }}
             className={styles.button}
           >
             Descargar
-          </a>
+          </button>
+
+          <div className={styles.downloadsBadge} title={`${downloads || 0} descargas`}>
+            <span className={styles.downloadIcon}>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                <polyline points="7 10 12 15 17 10"></polyline>
+                <line x1="12" y1="15" x2="12" y2="3"></line>
+              </svg>
+            </span>
+            <span className={styles.downloadCount}>{downloads || 0}</span>
+          </div>
 
           <button
             onClick={(e) => {
@@ -136,18 +146,6 @@ export const ToolCard: React.FC<ToolCardProps> = ({
             aria-label="Editar herramienta"
           >
             ✏️
-          </button>
-
-          <button
-            className={`${styles.likeBtn} ${liked ? styles.liked : ''}`}
-            onClick={(e) => {
-              e.preventDefault();
-              onLike(id);
-            }}
-            aria-label="Dar like"
-          >
-            <span className={styles.likeIcon}>{liked ? '❤️' : '🤍'}</span>
-            <span className={styles.likeCount}>{likes}</span>
           </button>
         </div>
       </div>
