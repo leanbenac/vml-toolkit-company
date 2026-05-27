@@ -175,8 +175,9 @@ export default function HomeClient({ initialTools }: HomeClientProps) {
 
       // Subir archivo si se seleccionó uno nuevo
       if (newToolFile) {
-        const sanitizedName = newToolFile.name.replace(/[^a-zA-Z0-9.\-_]/g, '_');
-        const fileName = `${Date.now()}-${sanitizedName}`;
+        // Usamos una subcarpeta con el timestamp para evitar colisiones
+        // y mantenemos el nombre original intacto para descargas limpias.
+        const fileName = `${Date.now()}/${newToolFile.name}`;
         const { error: fileError } = await supabase.storage
           .from('tools')
           .upload(`files/${fileName}`, newToolFile);
@@ -185,9 +186,7 @@ export default function HomeClient({ initialTools }: HomeClientProps) {
         
         const { data: fileUrlData } = supabase.storage
           .from('tools')
-          .getPublicUrl(`files/${fileName}`, {
-            download: newToolFile.name
-          });
+          .getPublicUrl(`files/${fileName}`);
         
         finalFileUrl = fileUrlData.publicUrl;
       }
