@@ -24,7 +24,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ success: true, isNewPinNeeded: true });
     }
 
-    if (tool.edit_pin === pin) {
+    if (String(tool.edit_pin) === String(pin)) {
       return NextResponse.json({ success: true });
     }
 
@@ -54,7 +54,7 @@ export async function PUT(request: Request) {
     }
 
     // Si la herramienta tiene un PIN registrado en la base de datos, validar que coincida.
-    if (tool.edit_pin && tool.edit_pin !== pin) {
+    if (tool.edit_pin && String(tool.edit_pin) !== String(pin)) {
       return NextResponse.json({ error: 'PIN incorrecto' }, { status: 401 });
     }
 

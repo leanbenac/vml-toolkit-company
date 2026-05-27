@@ -13,7 +13,7 @@ export interface Tool {
   category: string;
   imageUrl?: string;
   fileUrl: string;
-  likes: number;
+  downloads: number;
   author: string;
   team: string;
 }
@@ -35,7 +35,6 @@ export default function HomeClient({ initialTools }: HomeClientProps) {
   const [search, setSearch] = useState("");
   const [activeCategory, setActiveCategory] = useState("all");
   const [tools, setTools] = useState<Tool[]>(initialTools);
-  const [likedIds, setLikedIds] = useState<Set<string>>(new Set());
   const [visibleCount, setVisibleCount] = useState(6);
 
   // Estados para modal de edición
@@ -67,48 +66,24 @@ export default function HomeClient({ initialTools }: HomeClientProps) {
     setTools(initialTools);
   }, [initialTools]);
 
-  // Cargar likes locales desde localStorage
-  useEffect(() => {
-    const savedLikedIds = localStorage.getItem("vml-liked-ids");
-    if (savedLikedIds) {
-      setLikedIds(new Set(JSON.parse(savedLikedIds)));
-    }
-  }, []);
+  const handleDownload = async (id: string, fileUrl: string) => {
+    // 1. Abrir el archivo en otra pestaña para descargar
+    window.open(fileUrl, '_blank');
 
-  const handleLike = async (id: string) => {
-    const alreadyLiked = likedIds.has(id);
-    
-    // Buscar la herramienta en el estado actual para obtener el valor de likes real
+    // 2. Actualizar localmente el contador
     const currentTool = tools.find((t) => t.id === id);
     if (!currentTool) return;
-
-    // Calcular el nuevo número de likes (clamped a 0 como mínimo para evitar números negativos)
-    const newLikesCount = alreadyLiked 
-      ? Math.max(0, currentTool.likes - 1) 
-      : currentTool.likes + 1;
-
-    // Actualizar el estado local de herramientas inmediatamente
+    
+    const newDownloadsCount = (currentTool.downloads || 0) + 1;
     setTools((prev) =>
-      prev.map((t) => (t.id === id ? { ...t, likes: newLikesCount } : t))
+      prev.map((t) => (t.id === id ? { ...t, downloads: newDownloadsCount } : t))
     );
 
-    // Guardar el estado de likes en localstorage
-    setLikedIds((prev) => {
-      const next = new Set(prev);
-      if (alreadyLiked) {
-        next.delete(id);
-      } else {
-        next.add(id);
-      }
-      localStorage.setItem("vml-liked-ids", JSON.stringify([...next]));
-      return next;
-    });
-
-    // Actualizar en Supabase de forma segura con el valor calculado
+    // 3. Actualizar en Supabase
     try {
-      await supabase.from("tools").update({ likes: newLikesCount }).eq("id", id);
+      await supabase.from("tools").update({ downloads: newDownloadsCount }).eq("id", id);
     } catch (e) {
-      console.error("Error updating likes in Supabase", e);
+      console.error("Error updating downloads in Supabase", e);
     }
   };
 
@@ -280,7 +255,7 @@ export default function HomeClient({ initialTools }: HomeClientProps) {
         
         return matchesSearch && matchesCategory;
       })
-      .sort((a, b) => b.likes - a.likes);
+      .sort((a, b) => (b.downloads || 0) - (a.downloads || 0));
   }, [tools, search, activeCategory]);
 
   const visibleTools = filteredTools.slice(0, visibleCount);
@@ -374,11 +349,9 @@ export default function HomeClient({ initialTools }: HomeClientProps) {
                 category={tool.category}
                 imageUrl={tool.imageUrl}
                 fileUrl={tool.fileUrl}
-                likes={tool.likes}
-                liked={likedIds.has(tool.id)}
-                onLike={handleLike}
+                downloads={tool.downloads}
+                onDownload={handleDownload}
                 onEdit={handleEditClick}
-                isTrending={tool.id === filteredTools[0]?.id && tool.likes > 0}
                 author={tool.author}
                 team={tool.team}
               />

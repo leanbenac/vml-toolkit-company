@@ -120,13 +120,12 @@
   letter-spacing: 0.08em;
   padding: 4px 10px;
   border-radius: 999px;
-  background: rgba(var(--neon-color-rgb, 124, 58, 237), 0.15) !important;
-  border: 1px solid rgba(var(--neon-color-rgb, 124, 58, 237), 0.45) !important;
+  background: rgba(10, 10, 15, 0.75) !important;
+  border: 1px solid rgba(var(--neon-color-rgb, 124, 58, 237), 0.5) !important;
   color: var(--neon-color, #c4b5fd) !important;
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
-  box-shadow: 0 0 12px rgba(var(--neon-color-rgb, 124, 58, 237), 0.15);
-  text-shadow: 0 0 8px rgba(var(--neon-color-rgb, 124, 58, 237), 0.35);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
 }
 
 /* Content */
@@ -244,45 +243,26 @@
   color: var(--accent);
 }
 
-/* Like Button */
-.likeBtn {
+/* Downloads Badge */
+.downloadsBadge {
   display: flex;
   align-items: center;
   gap: 6px;
   background: rgba(255, 255, 255, 0.05);
   border: 1px solid var(--card-border);
-  padding: 0.75rem 1rem;
+  padding: 0.75rem 0.85rem;
   border-radius: 12px;
-  cursor: pointer;
-  font-size: 0.85rem;
-  font-weight: 600;
+  font-size: 0.8rem;
   color: var(--text-secondary);
-  transition: all 0.2s ease;
-  white-space: nowrap;
+  height: 42px;
 }
 
-.likeBtn:hover {
-  border-color: #f43f5e;
-  background: rgba(244, 63, 94, 0.08);
-  color: #f43f5e;
+.downloadIcon {
+  font-size: 0.9rem;
 }
 
-.liked {
-  border-color: #f43f5e !important;
-  background: rgba(244, 63, 94, 0.12) !important;
-  color: #f43f5e !important;
-}
-
-.likeIcon {
-  font-size: 1rem;
-  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-
-.likeBtn:hover .likeIcon,
-.liked .likeIcon {
-  transform: scale(1.25);
-}
-
-.likeCount {
+.downloadCount {
+  font-weight: 600;
   font-variant-numeric: tabular-nums;
+  color: #e2e8f0;
 }
