@@ -86,8 +86,8 @@ export default function AdminPage() {
 
       // Subir archivo si existe
       if (toolFile) {
-        const fileExt = toolFile.name.split('.').pop();
-        const fileName = `${Date.now()}-file.${fileExt}`;
+        const sanitizedName = toolFile.name.replace(/[^a-zA-Z0-9.\-_]/g, '_');
+        const fileName = `${Date.now()}-${sanitizedName}`;
         const { error: fileError } = await supabase.storage
           .from('tools')
           .upload(`files/${fileName}`, toolFile);
@@ -96,7 +96,9 @@ export default function AdminPage() {
         
         const { data: fileUrlData } = supabase.storage
           .from('tools')
-          .getPublicUrl(`files/${fileName}`);
+          .getPublicUrl(`files/${fileName}`, {
+            download: toolFile.name
+          });
         
         finalFileUrl = fileUrlData.publicUrl;
       }
