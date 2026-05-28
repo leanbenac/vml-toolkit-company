@@ -381,10 +381,10 @@ export default function HomeClient({ initialTools }: HomeClientProps) {
           <div className={styles.footerBrand}>
             <span className="accent-gradient">VML</span> Tools
           </div>
-          <p>© {new Date().getFullYear()} VML Hub Interno. Todos los derechos reservados.</p>
           <p className={styles.creator}>
             Developed by <span className={styles.creatorName}>Leandro Benac</span> | Frontend Developer VML
           </p>
+          <p>© {new Date().getFullYear()} VML Hub Interno. Todos los derechos reservados.</p>
         </div>
       </footer>
 
