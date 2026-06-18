@@ -10,10 +10,20 @@
 }
 
 .backLink {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
   margin-bottom: 1.5rem;
-  font-size: 0.9rem;
-  color: var(--text-secondary);
+  font-size: 0.95rem;
+  color: #c4b5fd;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.backLink:hover {
+  color: white;
+  transform: translateX(-4px);
+  text-shadow: 0 0 12px rgba(196, 181, 253, 0.5);
 }
 
 .subtitle {

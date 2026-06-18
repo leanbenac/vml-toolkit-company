@@ -266,7 +266,7 @@ export default function HomeClient({ initialTools }: HomeClientProps) {
   return (
     <div className={styles.container}>
       <header className={styles.header}>
-        <h1 className="text-gradient">VML Tools</h1>
+        <h1 className="accent-gradient">VML Tools</h1>
         <p className={styles.subtitle}>
           Simplifica tu trabajo con estas herramientas y aporta tus tools al
           team.
@@ -397,7 +397,17 @@ export default function HomeClient({ initialTools }: HomeClientProps) {
           <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
             <div className={styles.modalHeader}>
               <h2 className={styles.modalTitle}>Editar Tool</h2>
-              <p className={styles.modalSubtitle}>{editingTool.name}</p>
+              <button 
+                type="button"
+                className={styles.modalCloseBtn} 
+                onClick={() => setIsEditModalOpen(false)}
+                aria-label="Cerrar"
+              >
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <line x1="18" y1="6" x2="6" y2="18"></line>
+                  <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+              </button>
             </div>
 
             {!isPinVerified ? (

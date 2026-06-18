@@ -25,7 +25,7 @@ export default function RootLayout({
         <div className="grid-overlay" />
         <PasswordGate>
           <Navbar />
-          <main style={{ padding: '0 2rem' }}>
+          <main className="main-container">
             {children}
           </main>
         </PasswordGate>

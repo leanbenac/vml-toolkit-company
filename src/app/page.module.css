@@ -11,15 +11,18 @@
 }
 
 .header h1 {
-  font-size: 3.5rem;
-  margin-bottom: 1rem;
+  font-size: 2.8rem;
+  margin-bottom: 0.75rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  display: inline-block;
 }
 
 .subtitle {
-  color: #c7c7e1;
-  font-size: 1.15rem;
-  max-width: 540px;
-  margin: 0 auto 2.5rem;
+  color: #94a3b8;
+  font-size: 1.05rem;
+  max-width: 500px;
+  margin: 0 auto 3rem;
   line-height: 1.6;
 }
 
@@ -74,6 +77,10 @@
   box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.12);
 }
 
+.searchWrapper:focus-within .searchIcon {
+  color: var(--accent);
+}
+
 .clearBtn {
   position: absolute;
   right: 14px;
@@ -124,6 +131,7 @@
   background: var(--accent);
   border-color: var(--accent);
   color: white;
+  box-shadow: 0 4px 15px rgba(124, 58, 237, 0.35);
 }
 
 /* ── Results count ── */
@@ -342,6 +350,27 @@
 
 .modalHeader {
   margin-bottom: 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.modalCloseBtn {
+  background: none;
+  border: none;
+  color: #94a3b8;
+  cursor: pointer;
+  padding: 0.4rem;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.modalCloseBtn:hover {
+  color: white;
+  background: rgba(255, 255, 255, 0.1);
 }
 
 .modalTitle {
@@ -554,6 +583,18 @@
   opacity: 0;
   cursor: pointer;
   z-index: 10;
+}
+
+@media (max-width: 768px) {
+  .uploadGrid {
+    grid-template-columns: 1fr;
+  }
+  .modalContent {
+    padding: 1.5rem;
+  }
+  .modalTitle {
+    font-size: 1.25rem;
+  }
 }
 
 
