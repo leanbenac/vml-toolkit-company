@@ -1,17 +1,29 @@
 .navbar {
   position: sticky;
-  top: 0;
+  top: 1rem;
   z-index: 100;
   height: 72px;
+  width: 100%;
+  max-width: 1200px;
   display: flex;
   align-items: center;
   padding: 0 2rem;
-  margin: 1rem 2rem;
-  border-radius: 16px;
+  margin: 1rem auto;
+  border-radius: 20px;
+  background: rgba(15, 23, 42, 0.4);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease;
+}
+
+.navbar:hover {
+  border-color: rgba(255, 255, 255, 0.15);
+  box-shadow: 0 8px 32px rgba(124, 58, 237, 0.15);
 }
 
 .container {
-  max-width: 1200px;
   width: 100%;
   margin: 0 auto;
   display: flex;
@@ -24,6 +36,11 @@
   font-weight: 700;
   display: flex;
   gap: 4px;
+  transition: transform 0.3s ease;
+}
+
+.logo:hover {
+  transform: scale(1.02);
 }
 
 .links {
@@ -36,39 +53,59 @@
   font-size: 0.9rem;
   font-weight: 500;
   color: var(--text-secondary);
+  text-decoration: none;
   transition: color 0.2s ease;
 }
 
-.link:hover {
-  color: var(--foreground);
+.adminBtn {
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.8), rgba(99, 102, 241, 0.8));
+  color: white;
+  padding: 0.6rem 1.4rem;
+  border-radius: 12px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
 }
 
-.adminBtn {
-  background: var(--accent);
-  color: white;
-  padding: 0.6rem 1.2rem;
-  border-radius: 10px;
-  font-size: 0.85rem;
-  transition: all 0.3s ease;
+.adminBtn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, rgba(255,255,255,0.2), transparent);
+  opacity: 0;
+  transition: opacity 0.3s ease;
 }
 
 .adminBtn:hover {
-  transform: scale(1.02);
-  box-shadow: 0 0 20px rgba(124, 58, 237, 0.3);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(124, 58, 237, 0.4);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.adminBtn:hover::before {
   opacity: 1;
 }
 
 @media (max-width: 768px) {
   .navbar {
     margin: 0.5rem;
-    padding: 0 1rem;
+    padding: 0 1.25rem;
+    border-radius: 16px;
   }
   
   .links {
     gap: 1rem;
   }
   
-  .link {
+  .adminBtn {
+    padding: 0.5rem 1rem;
     font-size: 0.8rem;
   }
 }

@@ -35,7 +35,14 @@ export default function HomeClient({ initialTools }: HomeClientProps) {
   const [search, setSearch] = useState("");
   const [activeCategory, setActiveCategory] = useState("all");
   const [tools, setTools] = useState<Tool[]>(initialTools);
+  const [prevInitialTools, setPrevInitialTools] = useState<Tool[]>(initialTools);
   const [visibleCount, setVisibleCount] = useState(6);
+
+  // Sync tools when initialTools changes (for Server-Side updates)
+  if (initialTools !== prevInitialTools) {
+    setPrevInitialTools(initialTools);
+    setTools(initialTools);
+  }
 
   // Estados para modal de edición
   const [editingTool, setEditingTool] = useState<Tool | null>(null);
@@ -61,10 +68,6 @@ export default function HomeClient({ initialTools }: HomeClientProps) {
   const [newImageFile, setNewImageFile] = useState<File | null>(null);
   const [newToolFile, setNewToolFile] = useState<File | null>(null);
 
-  // Sync tools when initialTools changes (for Server-Side updates)
-  useEffect(() => {
-    setTools(initialTools);
-  }, [initialTools]);
 
   const handleDownload = async (id: string, fileUrl: string) => {
     // 1. Abrir el archivo en otra pestaña para descargar
@@ -230,9 +233,9 @@ export default function HomeClient({ initialTools }: HomeClientProps) {
       } else {
         setSaveError(data.error || "Error al guardar cambios");
       }
-    } catch (err: any) {
+    } catch (err) {
       console.error("Error al editar la herramienta:", err);
-      setSaveError(err.message || "Error de conexión al guardar");
+      setSaveError(err instanceof Error ? err.message : "Error de conexión al guardar");
     } finally {
       setIsSavingEdit(false);
     }
@@ -504,22 +507,29 @@ export default function HomeClient({ initialTools }: HomeClientProps) {
                       style={{ position: 'relative', overflow: 'hidden' }}
                     >
                       {newImageFile ? (
+                        /* eslint-disable-next-line @next/next/no-img-element */
                         <img 
                           src={URL.createObjectURL(newImageFile)} 
                           alt="Preview" 
                           style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover', zIndex: 0 }}
                         />
                       ) : editForm.imageUrl ? (
+                        /* eslint-disable-next-line @next/next/no-img-element */
                         <img 
                           src={editForm.imageUrl} 
                           alt="Preview" 
                           style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover', zIndex: 0 }}
                         />
                       ) : (
-                        <>
-                          <span style={{ position: 'relative', zIndex: 1 }}>🖼️ Imagen</span>
-                          <p style={{ position: 'relative', zIndex: 1, marginBottom: 0 }}>Arrastra o selecciona</p>
-                        </>
+                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px', position: 'relative', zIndex: 1 }}>
+                          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ color: '#a855f7' }}>
+                            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                            <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                            <polyline points="21 15 16 10 5 21"></polyline>
+                          </svg>
+                          <span style={{ fontWeight: 600 }}>Imagen</span>
+                          <p style={{ marginBottom: 0, fontSize: '0.85rem' }}>Arrastra o selecciona</p>
+                        </div>
                       )}
                       <input 
                         type="file" 
@@ -541,24 +551,34 @@ export default function HomeClient({ initialTools }: HomeClientProps) {
                       style={{ position: 'relative' }}
                     >
                       {newToolFile ? (
-                        <>
-                          <span style={{ fontSize: '1.8rem' }}>✅</span>
-                          <p style={{ color: 'white', fontWeight: 'bold', fontSize: '0.75rem', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '100%', padding: '0 4px' }}>{newToolFile.name}</p>
-                          <p style={{ fontSize: '0.65rem', marginTop: '-0.25rem' }}>Clic para cambiar</p>
-                        </>
+                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px' }}>
+                          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ color: '#10b981' }}>
+                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                            <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                          </svg>
+                          <p style={{ color: 'white', fontWeight: 'bold', fontSize: '0.75rem', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '100%', padding: '0 4px', margin: 0 }}>{newToolFile.name}</p>
+                          <p style={{ fontSize: '0.65rem', margin: 0 }}>Clic para cambiar</p>
+                        </div>
                       ) : editForm.fileUrl ? (
-                        <>
-                          <span style={{ fontSize: '1.5rem' }}>📁</span>
-                          <p style={{ color: '#cbd5e1', fontSize: '0.75rem', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '100%', padding: '0 4px' }}>
+                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px' }}>
+                          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ color: '#3b82f6' }}>
+                            <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path>
+                            <polyline points="13 2 13 9 20 9"></polyline>
+                          </svg>
+                          <p style={{ color: '#cbd5e1', fontSize: '0.75rem', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '100%', padding: '0 4px', margin: 0 }}>
                             {editForm.fileUrl.split('/').pop()?.split('?')[0] || 'Archivo actual'}
                           </p>
-                          <p style={{ fontSize: '0.65rem', marginTop: '-0.25rem' }}>Clic para reemplazar</p>
-                        </>
+                          <p style={{ fontSize: '0.65rem', margin: 0 }}>Clic para reemplazar</p>
+                        </div>
                       ) : (
-                        <>
-                          <span>📁 Archivo</span>
-                          <p>Arrastra o selecciona</p>
-                        </>
+                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px' }}>
+                          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ color: '#3b82f6' }}>
+                            <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path>
+                            <polyline points="13 2 13 9 20 9"></polyline>
+                          </svg>
+                          <span style={{ fontWeight: 600 }}>Archivo</span>
+                          <p style={{ margin: 0, fontSize: '0.85rem' }}>Arrastra o selecciona</p>
+                        </div>
                       )}
                       <input 
                         type="file" 

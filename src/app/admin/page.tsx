@@ -2,7 +2,6 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import styles from './admin.module.css';
 
@@ -15,7 +14,6 @@ const CATEGORIES = [
 ];
 
 export default function AdminPage() {
-  const router = useRouter();
   const [formData, setFormData] = useState({
     name: '',
     description: '',
@@ -287,16 +285,22 @@ export default function AdminPage() {
               style={{ position: 'relative', overflow: 'hidden' }}
             >
               {imageFile && typeof window !== 'undefined' ? (
+                /* eslint-disable-next-line @next/next/no-img-element */
                 <img 
                   src={URL.createObjectURL(imageFile)} 
                   alt="Preview" 
                   style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover', zIndex: 0 }}
                 />
               ) : (
-                <>
-                  <span style={{ position: 'relative', zIndex: 1 }}>🖼️ Imagen o Icono</span>
-                  <p style={{ position: 'relative', zIndex: 1, marginBottom: 0 }}>Arrastra o selecciona previsualización</p>
-                </>
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px', position: 'relative', zIndex: 1 }}>
+                  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ color: '#a855f7' }}>
+                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                    <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                    <polyline points="21 15 16 10 5 21"></polyline>
+                  </svg>
+                  <span style={{ fontWeight: 600 }}>Imagen / Icono</span>
+                  <p style={{ marginBottom: 0, fontSize: '0.8rem', color: '#94a3b8' }}>Clic o arrastrar</p>
+                </div>
               )}
               <input 
                 type="file" 
@@ -307,7 +311,7 @@ export default function AdminPage() {
               />
             </div>
             <p className={styles.uploadHelper}>
-              Recomendado: Proporción 16:9 (800x450px) o icono cuadrado.
+              Recomendado: 16:9 o cuadrado
             </p>
           </div>
           
@@ -319,16 +323,23 @@ export default function AdminPage() {
               style={{ position: 'relative' }}
             >
               {toolFile ? (
-                <>
-                  <span style={{ fontSize: '2.5rem' }}>✅</span>
-                  <p style={{ color: 'white', fontWeight: 'bold' }}>{toolFile.name}</p>
-                  <p style={{ fontSize: '0.75rem', marginTop: '-0.5rem' }}>Clic para cambiar</p>
-                </>
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
+                  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ color: '#10b981' }}>
+                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                    <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                  </svg>
+                  <p style={{ color: 'white', fontWeight: 'bold', margin: 0 }}>{toolFile.name}</p>
+                  <p style={{ fontSize: '0.75rem', margin: 0 }}>Clic para cambiar</p>
+                </div>
               ) : (
-                <>
-                  <span>📁 Archivo de la Tool</span>
-                  <p>Arrastra o selecciona el archivo</p>
-                </>
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
+                  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ color: '#3b82f6' }}>
+                    <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path>
+                    <polyline points="13 2 13 9 20 9"></polyline>
+                  </svg>
+                  <span style={{ fontWeight: 600 }}>Archivo Tool</span>
+                  <p style={{ margin: 0, fontSize: '0.8rem', color: '#94a3b8' }}>Clic o arrastrar</p>
+                </div>
               )}
               <input 
                 type="file" 
@@ -338,7 +349,7 @@ export default function AdminPage() {
               />
             </div>
             <p className={styles.uploadHelper}>
-              Formatos admitidos: Script (JS, PY), PDF, ZIP o instaladores.
+              Soporta: ZIP, PDF, Scripts o EXE
             </p>
           </div>
         </div>

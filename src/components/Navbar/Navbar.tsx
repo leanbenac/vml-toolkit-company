@@ -12,7 +12,6 @@ export const Navbar = () => {
         </Link>
         
         <div className={styles.links}>
-          <Link href="/" className={styles.link}>Galería</Link>
           <Link href="/admin" className={`${styles.link} ${styles.adminBtn}`}>
             Subir Herramienta
           </Link>

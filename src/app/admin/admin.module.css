@@ -204,18 +204,20 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 1.5rem;
+  align-items: stretch;
 }
 
 .uploadGroup {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
+  height: 100%;
 }
 
 .uploadHelper {
   font-size: 0.72rem !important;
   color: #a1a1aa !important;
-  margin-top: 0.25rem;
+  margin-top: auto;
   margin-bottom: 0;
   line-height: 1.4;
   text-align: center;
@@ -226,7 +228,7 @@
   position: relative;
   border: 2px dashed var(--glass-border);
   border-radius: 16px;
-  padding: 2.5rem 1rem;
+  padding: 1.5rem 1rem;
   text-align: center;
   transition: all 0.3s ease;
   display: flex;
@@ -234,7 +236,9 @@
   align-items: center;
   gap: 0.5rem;
   min-height: 140px;
+  flex-grow: 1;
   justify-content: center;
+  overflow: hidden;
 }
 
 .uploadBox:hover {
