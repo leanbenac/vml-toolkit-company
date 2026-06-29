@@ -13,6 +13,7 @@ export interface Tool {
   category: string;
   imageUrl?: string;
   fileUrl: string;
+  docs_url?: string; // Nuevo campo para documentación (PDF/Link)
   downloads: number;
   author: string;
   team: string;
@@ -62,11 +63,14 @@ export default function HomeClient({ initialTools }: HomeClientProps) {
     team: "",
     fileUrl: "",
     imageUrl: "",
+    docsUrl: "",
   });
   const [isSavingEdit, setIsSavingEdit] = useState(false);
   const [saveError, setSaveError] = useState("");
   const [newImageFile, setNewImageFile] = useState<File | null>(null);
   const [newToolFile, setNewToolFile] = useState<File | null>(null);
+  const [newDocsFile, setNewDocsFile] = useState<File | null>(null);
+  const [dragActive, setDragActive] = useState<string | null>(null);
 
 
   const handleDownload = async (id: string, fileUrl: string) => {
@@ -102,9 +106,11 @@ export default function HomeClient({ initialTools }: HomeClientProps) {
       team: tool.team,
       fileUrl: tool.fileUrl,
       imageUrl: tool.imageUrl || "",
+      docsUrl: tool.docs_url || "",
     });
     setNewImageFile(null);
     setNewToolFile(null);
+    setNewDocsFile(null);
     setEditPin("");
     setIsPinVerified(false);
     setPinError("");
@@ -116,12 +122,13 @@ export default function HomeClient({ initialTools }: HomeClientProps) {
     e.preventDefault();
   };
 
-  const handleDrop = (e: React.DragEvent, type: "image" | "tool") => {
+  const handleDrop = (e: React.DragEvent, type: "image" | "tool" | "docs") => {
     e.preventDefault();
     const files = e.dataTransfer.files;
     if (files.length > 0) {
       if (type === "image") setNewImageFile(files[0]);
-      else setNewToolFile(files[0]);
+      else if (type === "tool") setNewToolFile(files[0]);
+      else if (type === "docs") setNewDocsFile(files[0]);
     }
   };
 
@@ -158,6 +165,7 @@ export default function HomeClient({ initialTools }: HomeClientProps) {
     try {
       let finalImageUrl = editForm.imageUrl || null;
       let finalFileUrl = editForm.fileUrl;
+      let finalDocsUrl = editForm.docsUrl || null;
 
       // Subir imagen si se seleccionó una nueva
       if (newImageFile) {
@@ -194,6 +202,22 @@ export default function HomeClient({ initialTools }: HomeClientProps) {
         finalFileUrl = fileUrlData.publicUrl;
       }
 
+      // Subir docs si se seleccionó uno nuevo
+      if (newDocsFile) {
+        const docsName = `${Date.now()}-docs_${newDocsFile.name}`;
+        const { error: docsError } = await supabase.storage
+          .from('tools')
+          .upload(`docs/${docsName}`, newDocsFile);
+          
+        if (docsError) throw docsError;
+        
+        const { data: docsUrlData } = supabase.storage
+          .from('tools')
+          .getPublicUrl(`docs/${docsName}`);
+        
+        finalDocsUrl = docsUrlData.publicUrl;
+      }
+
       const res = await fetch("/api/tools/edit", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
@@ -207,6 +231,7 @@ export default function HomeClient({ initialTools }: HomeClientProps) {
           team: editForm.team,
           file_url: finalFileUrl,
           image_url: finalImageUrl,
+          docs_url: finalDocsUrl,
         }),
       });
       const data = await res.json();
@@ -224,6 +249,7 @@ export default function HomeClient({ initialTools }: HomeClientProps) {
                   team: editForm.team,
                   fileUrl: finalFileUrl,
                   imageUrl: finalImageUrl || undefined,
+                  docs_url: finalDocsUrl || undefined,
                 }
               : t
           )
@@ -351,6 +377,7 @@ export default function HomeClient({ initialTools }: HomeClientProps) {
                 category={tool.category}
                 imageUrl={tool.imageUrl}
                 fileUrl={tool.fileUrl}
+                docsUrl={tool.docs_url}
                 downloads={tool.downloads}
                 onDownload={handleDownload}
                 onEdit={handleEditClick}
@@ -509,9 +536,9 @@ export default function HomeClient({ initialTools }: HomeClientProps) {
 
                 <div className={styles.uploadGrid}>
                   <div className={styles.uploadGroup}>
-                    <label style={{ fontSize: '0.8rem', fontWeight: 600, color: '#cbd5e1' }}>Imagen o Icono (Opcional)</label>
+                    <label style={{ fontSize: '0.8rem', fontWeight: 600, color: '#cbd5e1', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>Imagen / Icono</label>
                     <div 
-                      className={styles.uploadBox}
+                      className={`${styles.uploadBox} ${dragActive === 'image' ? styles.dragActive : ''}`}
                       onDragOver={handleDragOver}
                       onDrop={(e) => handleDrop(e, 'image')}
                       style={{ position: 'relative', overflow: 'hidden' }}
@@ -546,6 +573,9 @@ export default function HomeClient({ initialTools }: HomeClientProps) {
                         accept="image/*" 
                         className={styles.fileInput} 
                         onChange={(e) => e.target.files && setNewImageFile(e.target.files[0])}
+                        onDragEnter={() => setDragActive('image')}
+                        onDragLeave={() => setDragActive(null)}
+                        onDrop={() => setDragActive(null)}
                         style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', opacity: 0, zIndex: 2, cursor: 'pointer' }}
                       />
                     </div>
@@ -553,9 +583,9 @@ export default function HomeClient({ initialTools }: HomeClientProps) {
                   </div>
                   
                   <div className={styles.uploadGroup}>
-                    <label style={{ fontSize: '0.8rem', fontWeight: 600, color: '#cbd5e1' }}>Archivo de la Tool</label>
+                    <label style={{ fontSize: '0.8rem', fontWeight: 600, color: '#cbd5e1', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>Archivo Tool</label>
                     <div 
-                      className={styles.uploadBox}
+                      className={`${styles.uploadBox} ${dragActive === 'tool' ? styles.dragActive : ''}`}
                       onDragOver={handleDragOver}
                       onDrop={(e) => handleDrop(e, 'tool')}
                       style={{ position: 'relative' }}
@@ -594,10 +624,65 @@ export default function HomeClient({ initialTools }: HomeClientProps) {
                         type="file" 
                         className={styles.fileInput} 
                         onChange={(e) => e.target.files && setNewToolFile(e.target.files[0])}
+                        onDragEnter={() => setDragActive('tool')}
+                        onDragLeave={() => setDragActive(null)}
+                        onDrop={() => setDragActive(null)}
                         style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', opacity: 0, zIndex: 2, cursor: 'pointer' }}
                       />
                     </div>
                     <p className={styles.uploadHelper}>Scripts (JS, PY), PDF, ZIP o instaladores.</p>
+                  </div>
+                  
+                  <div className={styles.uploadGroup}>
+                    <label style={{ fontSize: '0.8rem', fontWeight: 600, color: '#cbd5e1', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>Docs (Opcional)</label>
+                    <div 
+                      className={`${styles.uploadBox} ${dragActive === 'docs' ? styles.dragActive : ''}`}
+                      onDragOver={handleDragOver}
+                      onDrop={(e) => handleDrop(e, 'docs')}
+                      style={{ position: 'relative' }}
+                    >
+                      {newDocsFile ? (
+                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px' }}>
+                          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ color: '#f59e0b' }}>
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                            <polyline points="14 2 14 8 20 8"></polyline>
+                          </svg>
+                          <p style={{ color: 'white', fontWeight: 'bold', fontSize: '0.75rem', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '100%', padding: '0 4px', margin: 0 }}>{newDocsFile.name}</p>
+                          <p style={{ fontSize: '0.65rem', margin: 0 }}>Clic para cambiar</p>
+                        </div>
+                      ) : editForm.docsUrl ? (
+                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px' }}>
+                          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ color: '#f59e0b' }}>
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                            <polyline points="14 2 14 8 20 8"></polyline>
+                          </svg>
+                          <p style={{ color: '#cbd5e1', fontSize: '0.75rem', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '100%', padding: '0 4px', margin: 0 }}>
+                            Docs actual
+                          </p>
+                          <p style={{ fontSize: '0.65rem', margin: 0 }}>Clic para reemplazar</p>
+                        </div>
+                      ) : (
+                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px' }}>
+                          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ color: '#f59e0b' }}>
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                            <polyline points="14 2 14 8 20 8"></polyline>
+                          </svg>
+                          <span style={{ fontWeight: 600 }}>Docs</span>
+                          <p style={{ margin: 0, fontSize: '0.85rem' }}>Opcional</p>
+                        </div>
+                      )}
+                      <input 
+                        type="file" 
+                        accept=".pdf,.md,.txt"
+                        className={styles.fileInput} 
+                        onChange={(e) => e.target.files && setNewDocsFile(e.target.files[0])}
+                        onDragEnter={() => setDragActive('docs')}
+                        onDragLeave={() => setDragActive(null)}
+                        onDrop={() => setDragActive(null)}
+                        style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', opacity: 0, zIndex: 2, cursor: 'pointer' }}
+                      />
+                    </div>
+                    <p className={styles.uploadHelper}>PDF o Markdown.</p>
                   </div>
                 </div>
 

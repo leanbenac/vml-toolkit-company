@@ -315,8 +315,8 @@
   transform: translateY(-1px);
 }
 
-/* Edit Button */
-.editBtn {
+/* Edit & Docs Buttons */
+.editBtn, .docsBtn {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -333,7 +333,7 @@
   flex-shrink: 0;
 }
 
-.editBtn:hover {
+.editBtn:hover, .docsBtn:hover {
   border-color: var(--accent);
   background: rgba(var(--neon-color-rgb, 124, 58, 237), 0.1);
   color: var(--accent);

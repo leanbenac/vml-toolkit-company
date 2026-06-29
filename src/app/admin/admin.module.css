@@ -212,7 +212,7 @@
 
 .uploadGrid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(3, 1fr);
   gap: 1.5rem;
   align-items: stretch;
 }
@@ -245,7 +245,7 @@
   flex-direction: column;
   align-items: center;
   gap: 0.5rem;
-  min-height: 140px;
+  height: 140px;
   flex-grow: 1;
   justify-content: center;
   overflow: hidden;
@@ -256,8 +256,15 @@
   background: rgba(124, 58, 237, 0.05);
 }
 
+.dragActive {
+  border-color: var(--accent) !important;
+  background: rgba(124, 58, 237, 0.1) !important;
+  transform: scale(1.02);
+}
+
 .uploadBox span {
-  font-size: 1.8rem;
+  font-size: 1.1rem;
+  line-height: 1.3;
 }
 
 .uploadBox p {

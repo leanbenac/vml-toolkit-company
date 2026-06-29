@@ -25,6 +25,8 @@ export default function AdminPage() {
 
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [toolFile, setToolFile] = useState<File | null>(null);
+  const [docsFile, setDocsFile] = useState<File | null>(null);
+  const [dragActive, setDragActive] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
@@ -47,12 +49,13 @@ export default function AdminPage() {
     e.preventDefault();
   };
 
-  const handleDrop = (e: React.DragEvent, type: 'image' | 'tool') => {
+  const handleDrop = (e: React.DragEvent, type: 'image' | 'tool' | 'docs') => {
     e.preventDefault();
     const files = e.dataTransfer.files;
     if (files.length > 0) {
       if (type === 'image') setImageFile(files[0]);
-      else setToolFile(files[0]);
+      else if (type === 'tool') setToolFile(files[0]);
+      else if (type === 'docs') setDocsFile(files[0]);
     }
   };
 
@@ -64,6 +67,7 @@ export default function AdminPage() {
     try {
       let finalImageUrl = null;
       let finalFileUrl = "#";
+      let finalDocsUrl = null;
 
       // Subir imagen si existe
       if (imageFile) {
@@ -98,6 +102,22 @@ export default function AdminPage() {
         finalFileUrl = fileUrlData.publicUrl;
       }
 
+      // Subir documentación si existe
+      if (docsFile) {
+        const docsName = `${Date.now()}-docs_${docsFile.name}`;
+        const { error: docsError } = await supabase.storage
+          .from('tools')
+          .upload(`docs/${docsName}`, docsFile);
+          
+        if (docsError) throw docsError;
+        
+        const { data: docsUrlData } = supabase.storage
+          .from('tools')
+          .getPublicUrl(`docs/${docsName}`);
+        
+        finalDocsUrl = docsUrlData.publicUrl;
+      }
+
       // Inserción real en Supabase
       const { error } = await supabase.from('tools').insert([
         {
@@ -107,7 +127,8 @@ export default function AdminPage() {
           author: formData.author,
           team: formData.team,
           file_url: finalFileUrl,
-          image_url: finalImageUrl, 
+          image_url: finalImageUrl,
+          docs_url: finalDocsUrl,
           // DESCOMENTAR PARA ACTIVAR LA MODERACIÓN (Si se omite, en Supabase el default es false)
           // is_approved: false, 
           is_approved: true, // Auto-aprobar para adopción rápida (Quitar esto cuando se active el moderador)
@@ -279,7 +300,7 @@ export default function AdminPage() {
         <div className={styles.uploadGrid}>
           <div className={styles.uploadGroup}>
             <div 
-              className={styles.uploadBox}
+              className={`${styles.uploadBox} ${dragActive === 'image' ? styles.dragActive : ''}`}
               onDragOver={handleDragOver}
               onDrop={(e) => handleDrop(e, 'image')}
               style={{ position: 'relative', overflow: 'hidden' }}
@@ -307,6 +328,9 @@ export default function AdminPage() {
                 accept="image/*" 
                 className={styles.fileInput} 
                 onChange={(e) => e.target.files && setImageFile(e.target.files[0])}
+                onDragEnter={() => setDragActive('image')}
+                onDragLeave={() => setDragActive(null)}
+                onDrop={() => setDragActive(null)}
                 style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', opacity: 0, zIndex: 2, cursor: 'pointer' }}
               />
             </div>
@@ -317,7 +341,7 @@ export default function AdminPage() {
           
           <div className={styles.uploadGroup}>
             <div 
-              className={styles.uploadBox}
+              className={`${styles.uploadBox} ${dragActive === 'tool' ? styles.dragActive : ''}`}
               onDragOver={handleDragOver}
               onDrop={(e) => handleDrop(e, 'tool')}
               style={{ position: 'relative' }}
@@ -328,7 +352,7 @@ export default function AdminPage() {
                     <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
                     <polyline points="22 4 12 14.01 9 11.01"></polyline>
                   </svg>
-                  <p style={{ color: 'white', fontWeight: 'bold', margin: 0 }}>{toolFile.name}</p>
+                  <p style={{ color: 'white', fontWeight: 'bold', margin: 0, fontSize: '0.8rem', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '100%', padding: '0 10px' }}>{toolFile.name}</p>
                   <p style={{ fontSize: '0.75rem', margin: 0 }}>Clic para cambiar</p>
                 </div>
               ) : (
@@ -345,11 +369,59 @@ export default function AdminPage() {
                 type="file" 
                 className={styles.fileInput} 
                 onChange={(e) => e.target.files && setToolFile(e.target.files[0])}
+                onDragEnter={() => setDragActive('tool')}
+                onDragLeave={() => setDragActive(null)}
+                onDrop={() => setDragActive(null)}
                 style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', opacity: 0, zIndex: 2, cursor: 'pointer' }}
               />
             </div>
             <p className={styles.uploadHelper}>
               Soporta: ZIP, PDF, Scripts o EXE
+            </p>
+          </div>
+          
+          <div className={styles.uploadGroup}>
+            <div 
+              className={`${styles.uploadBox} ${dragActive === 'docs' ? styles.dragActive : ''}`}
+              onDragOver={handleDragOver}
+              onDrop={(e) => handleDrop(e, 'docs')}
+              style={{ position: 'relative' }}
+            >
+              {docsFile ? (
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
+                  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ color: '#f59e0b' }}>
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                    <polyline points="14 2 14 8 20 8"></polyline>
+                    <line x1="16" y1="13" x2="8" y2="13"></line>
+                    <line x1="16" y1="17" x2="8" y2="17"></line>
+                    <polyline points="10 9 9 9 8 9"></polyline>
+                  </svg>
+                  <p style={{ color: 'white', fontWeight: 'bold', margin: 0, fontSize: '0.8rem', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '100%', padding: '0 10px' }}>{docsFile.name}</p>
+                  <p style={{ fontSize: '0.75rem', margin: 0 }}>Clic para cambiar</p>
+                </div>
+              ) : (
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
+                  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ color: '#f59e0b' }}>
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                    <polyline points="14 2 14 8 20 8"></polyline>
+                  </svg>
+                  <span style={{ fontWeight: 600 }}>Docs (Opcional)</span>
+                  <p style={{ margin: 0, fontSize: '0.8rem', color: '#94a3b8' }}>PDF o Markdown</p>
+                </div>
+              )}
+              <input 
+                type="file" 
+                accept=".pdf,.md,.txt"
+                className={styles.fileInput} 
+                onChange={(e) => e.target.files && setDocsFile(e.target.files[0])}
+                onDragEnter={() => setDragActive('docs')}
+                onDragLeave={() => setDragActive(null)}
+                onDrop={() => setDragActive(null)}
+                style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', opacity: 0, zIndex: 2, cursor: 'pointer' }}
+              />
+            </div>
+            <p className={styles.uploadHelper}>
+              Manual de uso o documentación
             </p>
           </div>
         </div>

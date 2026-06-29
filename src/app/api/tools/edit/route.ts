@@ -36,7 +36,7 @@ export async function POST(request: Request) {
 
 export async function PUT(request: Request) {
   try {
-    const { id, pin, name, description, category, author, team, file_url, image_url } = await request.json();
+    const { id, pin, name, description, category, author, team, file_url, image_url, docs_url } = await request.json();
 
     if (!id) {
       return NextResponse.json({ error: 'Falta el ID de la herramienta' }, { status: 400 });
@@ -67,6 +67,7 @@ export async function PUT(request: Request) {
       team,
       file_url,
       image_url,
+      docs_url,
     };
 
     // Si la herramienta no tenía un PIN y se provee uno nuevo, se guarda.
