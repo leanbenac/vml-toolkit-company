@@ -105,6 +105,11 @@ export const ToolCard: React.FC<ToolCardProps> = ({
       <div className={styles.content}>
         <div className={styles.headerRow}>
           <h3 className={styles.title} title={name}>{name}</h3>
+          {team && (
+            <div className={styles.teamBadge}>
+              {team}
+            </div>
+          )}
         </div>
         
         <div className={styles.descriptionContainer}>
@@ -123,7 +128,17 @@ export const ToolCard: React.FC<ToolCardProps> = ({
               }}
               style={{ '--neon-color': neonColor } as React.CSSProperties}
             >
-              {isExpanded ? 'Ver menos' : 'Leer más'}
+              {isExpanded ? (
+                <>
+                  Ver menos
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="18 15 12 9 6 15"></polyline></svg>
+                </>
+              ) : (
+                <>
+                  Leer más
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                </>
+              )}
             </button>
           )}
         </div>
@@ -134,11 +149,15 @@ export const ToolCard: React.FC<ToolCardProps> = ({
               <span className={styles.authorLabel}>By</span> {author}
             </div>
           )}
-          {team && (
-            <div className={styles.teamBadge}>
-              {team}
-            </div>
-          )}
+          
+          <div className={styles.miniDownloads} title={`${downloads || 0} descargas`}>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="7 10 12 15 17 10"></polyline>
+              <line x1="12" y1="15" x2="12" y2="3"></line>
+            </svg>
+            <span className={styles.miniDownloadCount}>{downloads || 0}</span>
+          </div>
         </div>
 
         <div className={styles.actions}>
@@ -152,29 +171,15 @@ export const ToolCard: React.FC<ToolCardProps> = ({
             Descargar
           </button>
 
-          <div className={styles.downloadsBadge} title={`${downloads || 0} descargas`}>
-            <span className={styles.downloadIcon}>
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                <polyline points="7 10 12 15 17 10"></polyline>
-                <line x1="12" y1="15" x2="12" y2="3"></line>
-              </svg>
-            </span>
-            <span className={styles.downloadCount}>{downloads || 0}</span>
-          </div>
-
           {docsUrl && (
             <a
               href={docsUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className={styles.docsBtn}
+              className={styles.docsBtnExtended}
               title="Ver Documentación"
             >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
-                <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
-              </svg>
+              <span>Ver Docs</span>
             </a>
           )}
 

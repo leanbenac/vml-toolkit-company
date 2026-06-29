@@ -412,9 +412,9 @@ export default function HomeClient({ initialTools }: HomeClientProps) {
             <span className="accent-gradient">VML</span> Tools
           </div>
           <p className={styles.creator}>
-            Developed by <span className={styles.creatorName}>Leandro Benac</span> | Frontend Developer VML
+            Developed by <span className={styles.creatorName}>Automation Squad</span> | VML
           </p>
-          <p>© {new Date().getFullYear()} VML Hub Interno. Todos los derechos reservados.</p>
+          <p className={styles.copyright}>© {new Date().getFullYear()} VML Hub Interno. Todos los derechos reservados.</p>
         </div>
       </footer>
 

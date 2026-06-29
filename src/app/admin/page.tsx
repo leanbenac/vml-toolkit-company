@@ -197,7 +197,7 @@ export default function AdminPage() {
           <input 
             id="author"
             type="text" 
-            placeholder="Ej: Leandro Benac"
+            placeholder="Ej: Leandro Iván Benac"
             value={formData.author || ''}
             onChange={(e) => setFormData({...formData, author: e.target.value})}
             required

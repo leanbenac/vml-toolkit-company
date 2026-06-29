@@ -249,6 +249,14 @@
   -webkit-text-fill-color: transparent;
 }
 
+.copyright {
+  font-size: 0.75rem;
+  opacity: 0.5;
+  margin-top: -0.5rem;
+  font-weight: 400;
+  letter-spacing: 0.02em;
+}
+
 /* ── Responsive ── */
 @media (max-width: 768px) {
   .container {
