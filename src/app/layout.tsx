@@ -18,7 +18,7 @@ export const metadata: Metadata = {
     locale: "es_ES",
     images: [
       {
-        url: "/og-image.jpg", // Next.js buscará esta imagen en la carpeta public/
+        url: "/og-image.jpeg", // Next.js buscará esta imagen en la carpeta public/
         width: 1200,
         height: 630,
         alt: "VML Tools Hub - Vista Previa",
@@ -29,7 +29,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "VML Tools Hub 🚀",
     description: "Repositorio interno de scripts, extensiones y utilidades para el equipo de VML.",
-    images: ["/og-image.jpg"],
+    images: ["/og-image.jpeg"],
   },
 };
 
