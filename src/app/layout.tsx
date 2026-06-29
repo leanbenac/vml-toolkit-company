@@ -5,6 +5,7 @@ import { Analytics } from "@vercel/analytics/react";
 import "./globals.css";
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://vml-toolkit-company.vercel.app"),
   title: "VML Tools | Hub Interno",
   description: "Simplifica tu trabajo con estas herramientas y aporta tus tools al team.",
   keywords: ["VML", "Tools", "Automation", "Scripts", "Extensiones", "Hub"],
