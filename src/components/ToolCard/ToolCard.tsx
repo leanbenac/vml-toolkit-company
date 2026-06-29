@@ -1,4 +1,6 @@
-import React from 'react';
+"use client";
+
+import React, { useState } from 'react';
 import styles from './ToolCard.module.css';
 
 interface ToolCardProps {
@@ -13,7 +15,7 @@ interface ToolCardProps {
   onEdit: (id: string) => void;
   isTrending?: boolean;
   author?: string;
-  team?: string; // Nuevo campo para la marca o equipo
+  team?: string;
 }
 
 const categoryLabels: Record<string, string> = {
@@ -55,6 +57,10 @@ export const ToolCard: React.FC<ToolCardProps> = ({
   team,
 }) => {
   const neonColor = categoryColors[category] || '#ffffff';
+  const [isExpanded, setIsExpanded] = useState(false);
+  
+  // Un cálculo simple para determinar si el texto es probablemente muy largo
+  const isLongDescription = description && description.length > 120;
 
   return (
     <div className={`${styles.card} card-glass ${isTrending ? styles.trendingCard : ''}`}>
@@ -99,7 +105,26 @@ export const ToolCard: React.FC<ToolCardProps> = ({
           <h3 className={styles.title} title={name}>{name}</h3>
         </div>
         
-        <p className={styles.description} title={description}>{description}</p>
+        <div className={styles.descriptionContainer}>
+          <div className={styles.descriptionWrapper}>
+            <p className={styles.descriptionPlaceholder}>{description}</p>
+            <div className={`${styles.descriptionText} ${isExpanded ? styles.expanded : ''}`} style={{ '--neon-color-rgb': categoryRGBs[category] || '255, 255, 255' } as React.CSSProperties}>
+              {description}
+            </div>
+          </div>
+          {isLongDescription && (
+            <button 
+              className={styles.readMoreBtn} 
+              onClick={(e) => {
+                e.preventDefault();
+                setIsExpanded(!isExpanded);
+              }}
+              style={{ '--neon-color': neonColor } as React.CSSProperties}
+            >
+              {isExpanded ? 'Ver menos' : 'Leer más'}
+            </button>
+          )}
+        </div>
         
         <div className={styles.metaInfo}>
           {author && (

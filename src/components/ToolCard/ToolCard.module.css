@@ -1,6 +1,6 @@
 .card {
   border-radius: 20px;
-  overflow: hidden;
+  /* overflow: hidden; Quitado para que el tooltip pueda salir de la tarjeta */
   display: flex;
   flex-direction: column;
   height: 100%;
@@ -58,6 +58,8 @@
   justify-content: center;
   border-bottom: 1px solid var(--card-border);
   overflow: hidden;
+  border-top-left-radius: 20px;
+  border-top-right-radius: 20px;
 }
 
 .blurredBackdrop {
@@ -158,16 +160,95 @@
   overflow: hidden;
 }
 
-.description {
-  font-size: 0.875rem;
-  color: #cbd5e1; /* Slate-300 for superior contrast and readability */
-  line-height: 1.6;
-  margin-bottom: 1.25rem;
+.descriptionContainer {
   flex-grow: 1;
+  margin-bottom: 1.25rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.descriptionWrapper {
+  position: relative;
+  width: 100%;
+}
+
+.descriptionPlaceholder {
+  font-size: 0.875rem;
+  line-height: 1.6;
   display: -webkit-box;
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
+  visibility: hidden; /* Mantiene la altura intacta */
+  pointer-events: none;
+}
+
+.descriptionText {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  font-size: 0.875rem;
+  color: #cbd5e1;
+  line-height: 1.6;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  background: transparent;
+  padding: 0;
+  border-radius: 12px;
+  z-index: 20;
+}
+
+.descriptionText.expanded {
+  display: block;
+  -webkit-line-clamp: unset;
+  
+  /* Fondo que coincide con la tarjeta para que no parezca un popup */
+  background: rgba(15, 23, 42, 0.98);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  
+  /* Se expande hacia los lados para cubrir todo el ancho de la tarjeta */
+  left: -1.5rem;
+  width: calc(100% + 3rem);
+  padding: 1.5rem; /* Mantiene la alineación del texto */
+  
+  /* Ajuste inferior para cubrir exactamente el espacio original */
+  bottom: -1.5rem;
+  
+  /* Crecimiento hacia arriba fluido, sin bordes de popup */
+  border: none;
+  border-top: 1px solid rgba(255, 255, 255, 0.05); /* Línea muy sutil para separar de la imagen si llega tan arriba */
+  
+  /* Sombra del mismo color del fondo hacia arriba para difuminar el borde superior */
+  box-shadow: 0 -15px 30px rgba(15, 23, 42, 0.98);
+  
+  z-index: 50;
+}
+
+.readMoreBtn {
+  align-self: flex-end; /* Alineado a la derecha */
+  background: transparent;
+  border: none;
+  color: var(--neon-color, #c4b5fd);
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 4px 0;
+  margin-top: 8px;
+  opacity: 0.8;
+  transition: opacity 0.2s;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  z-index: 51;
+  position: relative;
+}
+
+.readMoreBtn:hover {
+  opacity: 1;
 }
 
 .metaInfo {
