@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Navbar } from "@/components/Navbar/Navbar";
 import { PasswordGate } from "@/components/PasswordGate/PasswordGate";
+import { Analytics } from "@vercel/analytics/react";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -29,6 +30,7 @@ export default function RootLayout({
             {children}
           </main>
         </PasswordGate>
+        <Analytics />
       </body>
     </html>
   );
