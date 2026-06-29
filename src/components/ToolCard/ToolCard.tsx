@@ -10,6 +10,7 @@ interface ToolCardProps {
   category?: string;
   imageUrl?: string;
   fileUrl: string;
+  docsUrl?: string;
   downloads: number;
   onDownload: (id: string, fileUrl: string) => void;
   onEdit: (id: string) => void;
