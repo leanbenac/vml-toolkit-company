@@ -31,6 +31,9 @@ export const metadata: Metadata = {
     description: "Repositorio interno de scripts, extensiones y utilidades para el equipo de VML.",
     images: ["/og-image.jpg"],
   },
+};
+
+export const viewport: import("next").Viewport = {
   themeColor: "#0f111a",
 };
 
