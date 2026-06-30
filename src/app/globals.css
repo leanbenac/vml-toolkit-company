@@ -154,7 +154,7 @@ h1, h2, h3, h4 {
   flex: 1;
 }
 
-/* Evitar que Chrome pinte de blanco los inputs autocompletados (mantiene el glassmorphism) */
+/* Evitar que Chrome pinte de blanco los inputs autocompletados */
 input:-webkit-autofill,
 input:-webkit-autofill:hover, 
 input:-webkit-autofill:focus, 
@@ -163,9 +163,10 @@ textarea:-webkit-autofill,
 textarea:-webkit-autofill:hover,
 textarea:-webkit-autofill:focus,
 textarea:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0px 1000px #12141d inset !important;
+  -webkit-text-fill-color: white !important;
+  caret-color: white;
   transition: background-color 5000s ease-in-out 0s;
-  -webkit-text-fill-color: var(--foreground) !important;
-  caret-color: var(--foreground);
 }
 
 @media (max-width: 768px) {

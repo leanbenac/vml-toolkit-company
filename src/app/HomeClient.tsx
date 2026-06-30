@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo, useRef } from "react";
 import { ToolGrid } from "@/components/ToolGrid/ToolGrid";
 import { ToolCard } from "@/components/ToolCard/ToolCard";
 import { supabase } from "@/lib/supabase";
@@ -71,6 +71,19 @@ export default function HomeClient({ initialTools }: HomeClientProps) {
   const [newToolFile, setNewToolFile] = useState<File | null>(null);
   const [newDocsFile, setNewDocsFile] = useState<File | null>(null);
   const [dragActive, setDragActive] = useState<string | null>(null);
+
+  const [isCategoryOpen, setIsCategoryOpen] = useState(false);
+  const categoryDropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (categoryDropdownRef.current && !categoryDropdownRef.current.contains(event.target as Node)) {
+        setIsCategoryOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
 
   const handleDownload = async (id: string, fileUrl: string) => {
@@ -288,6 +301,7 @@ export default function HomeClient({ initialTools }: HomeClientProps) {
 
   const visibleTools = filteredTools.slice(0, visibleCount);
   const hasMore = filteredTools.length > visibleCount;
+  const selectedCategoryLabel = CATEGORIES.find(c => c.value === editForm.category)?.label || 'Seleccionar...';
 
   return (
     <div className={styles.container}>
@@ -483,7 +497,12 @@ export default function HomeClient({ initialTools }: HomeClientProps) {
                 </div>
 
                 <div className={styles.modalField}>
-                  <label htmlFor="editDescription">Descripción</label>
+                  <div className={styles.modalLabelRow}>
+                    <label htmlFor="editDescription">Descripción</label>
+                    <span className={`${styles.charCounter} ${(editForm.description || '').length >= 180 ? styles.charCounterWarning : ''}`}>
+                      {(editForm.description || '').length} / 200
+                    </span>
+                  </div>
                   <textarea
                     id="editDescription"
                     required
@@ -495,19 +514,38 @@ export default function HomeClient({ initialTools }: HomeClientProps) {
                 </div>
 
                 <div className={styles.modalField}>
-                  <label htmlFor="editCategory">Categoría</label>
-                  <select
-                    id="editCategory"
-                    value={editForm.category}
-                    onChange={(e) => setEditForm({ ...editForm, category: e.target.value })}
-                    className={styles.modalSelect}
-                  >
-                    <option value="Extensiones">Extensiones Chrome</option>
-                    <option value="AppWebs">AppWebs</option>
-                    <option value="Scripts">Scripts</option>
-                    <option value="Bots">Bots</option>
-                    <option value="Docs">Docs</option>
-                  </select>
+                  <label>Categoría</label>
+                  <div className={styles.customSelectContainer} ref={categoryDropdownRef}>
+                    <div 
+                      className={`${styles.customSelectTrigger} ${isCategoryOpen ? styles.triggerActive : ''}`}
+                      onClick={() => setIsCategoryOpen(!isCategoryOpen)}
+                    >
+                      <span>{selectedCategoryLabel}</span>
+                      <span className={`${styles.customArrow} ${isCategoryOpen ? styles.arrowRotate : ''}`}>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="m6 9 6 6 6-6"/>
+                        </svg>
+                      </span>
+                    </div>
+                    
+                    {isCategoryOpen && (
+                      <div className={styles.customOptions}>
+                        {CATEGORIES.filter(cat => cat.value !== 'all').map((cat) => (
+                          <div 
+                            key={cat.value}
+                            className={`${styles.customOption} ${editForm.category === cat.value ? styles.optionSelected : ''}`}
+                            onClick={() => {
+                              setEditForm({...editForm, category: cat.value});
+                              setIsCategoryOpen(false);
+                            }}
+                          >
+                            {cat.label}
+                            {editForm.category === cat.value && <span className={styles.checkIcon}>✓</span>}
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
                 </div>
 
                 <div className={styles.modalField}>
@@ -591,7 +629,7 @@ export default function HomeClient({ initialTools }: HomeClientProps) {
                       style={{ position: 'relative' }}
                     >
                       {newToolFile ? (
-                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px' }}>
+                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px', width: '100%' }}>
                           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ color: '#10b981' }}>
                             <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
                             <polyline points="22 4 12 14.01 9 11.01"></polyline>
@@ -600,7 +638,7 @@ export default function HomeClient({ initialTools }: HomeClientProps) {
                           <p style={{ fontSize: '0.65rem', margin: 0 }}>Clic para cambiar</p>
                         </div>
                       ) : editForm.fileUrl ? (
-                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px' }}>
+                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px', width: '100%' }}>
                           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ color: '#3b82f6' }}>
                             <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path>
                             <polyline points="13 2 13 9 20 9"></polyline>
@@ -642,7 +680,7 @@ export default function HomeClient({ initialTools }: HomeClientProps) {
                       style={{ position: 'relative' }}
                     >
                       {newDocsFile ? (
-                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px' }}>
+                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px', width: '100%' }}>
                           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ color: '#f59e0b' }}>
                             <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
                             <polyline points="14 2 14 8 20 8"></polyline>
@@ -651,7 +689,7 @@ export default function HomeClient({ initialTools }: HomeClientProps) {
                           <p style={{ fontSize: '0.65rem', margin: 0 }}>Clic para cambiar</p>
                         </div>
                       ) : editForm.docsUrl ? (
-                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px' }}>
+                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px', width: '100%' }}>
                           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ color: '#f59e0b' }}>
                             <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
                             <polyline points="14 2 14 8 20 8"></polyline>

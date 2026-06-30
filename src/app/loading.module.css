@@ -1,0 +1,156 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  padding: 2rem;
+  min-height: 100vh;
+}
+
+.headerSkeleton {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.titleSkeleton {
+  height: 40px;
+  width: 250px;
+  border-radius: 8px;
+}
+
+.subtitleSkeleton {
+  height: 20px;
+  width: 400px;
+  border-radius: 6px;
+  max-width: 100%;
+}
+
+.filtersSkeleton {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.searchSkeleton {
+  height: 50px;
+  width: 100%;
+  border-radius: 12px;
+}
+
+.tabsSkeleton {
+  display: flex;
+  gap: 0.5rem;
+  overflow-x: auto;
+}
+
+.tabSkeleton {
+  height: 38px;
+  width: 100px;
+  border-radius: 20px;
+  flex-shrink: 0;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 1.5rem;
+  width: 100%;
+}
+
+.card {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 16px;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  height: 280px;
+}
+
+.cardHeader {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.cardIcon {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  flex-shrink: 0;
+}
+
+.cardTitleGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  flex: 1;
+}
+
+.cardTitle {
+  height: 24px;
+  width: 80%;
+  border-radius: 6px;
+}
+
+.cardMeta {
+  height: 16px;
+  width: 60%;
+  border-radius: 4px;
+}
+
+.cardBody {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  flex: 1;
+}
+
+.cardLine {
+  height: 14px;
+  border-radius: 4px;
+}
+
+.cardFooter {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: auto;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  padding-top: 1rem;
+}
+
+.cardButton {
+  height: 40px;
+  width: 120px;
+  border-radius: 8px;
+}
+
+.cardStat {
+  height: 20px;
+  width: 60px;
+  border-radius: 4px;
+}
+
+/* Animación Glassmorphic Shimmer */
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.shimmer {
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.03) 25%,
+    rgba(255, 255, 255, 0.08) 50%,
+    rgba(255, 255, 255, 0.03) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite linear;
+}
