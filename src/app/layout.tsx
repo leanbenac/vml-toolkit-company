@@ -14,8 +14,8 @@ export const metadata: Metadata = {
     canonical: "https://vml-toolkit-company.vercel.app",
   },
   robots: {
-    index: true,
-    follow: true,
+    index: false,
+    follow: false,
   },
   openGraph: {
     title: "VML Tools Hub 🚀",
