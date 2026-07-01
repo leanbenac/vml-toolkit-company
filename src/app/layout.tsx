@@ -10,6 +10,13 @@ export const metadata: Metadata = {
   description: "Simplifica tu trabajo con estas herramientas y aporta tus tools al team.",
   keywords: ["VML", "Tools", "Automation", "Scripts", "Extensiones", "Hub"],
   authors: [{ name: "Automation Squad" }],
+  alternates: {
+    canonical: "https://vml-toolkit-company.vercel.app",
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
   openGraph: {
     title: "VML Tools Hub 🚀",
     description: "Repositorio interno de scripts, extensiones y utilidades para el equipo de VML. Desarrollado por Automation Squad.",
